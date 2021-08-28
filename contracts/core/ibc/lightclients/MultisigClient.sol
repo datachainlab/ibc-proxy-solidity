@@ -86,7 +86,7 @@ contract MultisigClient is IClient {
       require(consensusState.addresses.length == multisig.signatures.length, "signatures length mismatch");
 
       for (uint i = 0; i < consensusState.addresses.length; i++) {
-        require(multisig.signatures[i].length == 0, "signature is empty");
+        require(multisig.signatures[i].length > 0, "signature is empty");
         address addr = ECRecovery.recover(keccak256(signBytes), multisig.signatures[i]);
         require(consensusState.addresses[i].toAddress() == addr, "signer mismatch");
       }
@@ -111,7 +111,7 @@ contract MultisigClient is IClient {
         return verifySignature(
           consensusState,
           MultiSignature.decode(proof),
-          makeClientStateSignBytes(height, consensusState.timestamp, consensusState.diversifier, counterpartyClientIdentifier, clientStateBytes)
+          makeClientStateSignBytes(height, consensusState.timestamp, consensusState.diversifier, counterpartyClientIdentifier, clientStateBytes, prefix)
         );
     }
 
@@ -192,7 +192,7 @@ contract MultisigClient is IClient {
 
     function getConsensusState(IBCHost host, string memory clientId, Height.Data memory height) public virtual view returns (ConsensusState.Data memory consensusState, bool found) {
       bytes memory consensusStateBytes;
-      (consensusStateBytes, found) = host.getConsensusState(clientId, height.revision_number);
+      (consensusStateBytes, found) = host.getConsensusState(clientId, height.revision_height);
       if (!found) {
         return (consensusState, false);
       }
@@ -210,7 +210,8 @@ contract MultisigClient is IClient {
       uint64 timestamp,
       string memory diversifier,
       string memory clientID,
-      bytes memory clientState
+      bytes memory clientState,
+      bytes memory prefix
     ) public pure returns (bytes memory) {
       return SignBytes.encode(
         SignBytes.Data({
@@ -221,7 +222,7 @@ contract MultisigClient is IClient {
           data: StateData.encode(
             StateData.Data(
               {
-                path: abi.encodePacked(IBCIdentifier.clientCommitmentKey(clientID)),
+                path: abi.encodePacked(prefix, IBCIdentifier.clientCommitmentKey(clientID)),
                 value: clientState
               }
             )
