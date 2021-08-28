@@ -1,5 +1,6 @@
 syntax = "proto3";
-// package ibc.lightclients.ethmultisig.v1;
+
+option go_package = "github.com/datachainlab/ibc-proxy-solidity/modules/light-clients/xx-ethmultisig/types";
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/any.proto";
@@ -85,7 +86,7 @@ message SignBytes {
   string diversifier = 3;
   // type of the data used
   DataType data_type = 4 [(gogoproto.moretags) = "yaml:\"data_type\""];
-  // marshaled data
+  // marshaled HeaderData or StateData
   bytes data = 5;
 }
 
@@ -105,65 +106,3 @@ message StateData {
   bytes path  = 1;
   bytes value = 2;
 }
-
-// // ClientStateData returns the SignBytes data for client state verification.
-// message ClientStateData {
-//   option (gogoproto.goproto_getters) = false;
-
-//   bytes               path         = 1;
-//   google.protobuf.Any client_state = 2 [(gogoproto.moretags) = "yaml:\"client_state\""];
-// }
-
-// // ConsensusStateData returns the SignBytes data for consensus state
-// // verification.
-// message ConsensusStateData {
-//   option (gogoproto.goproto_getters) = false;
-
-//   bytes               path            = 1;
-//   google.protobuf.Any consensus_state = 2 [(gogoproto.moretags) = "yaml:\"consensus_state\""];
-// }
-
-// // ConnectionStateData returns the SignBytes data for connection state
-// // verification.
-// message ConnectionStateData {
-//   option (gogoproto.goproto_getters) = false;
-
-//   bytes path       = 1;
-//   bytes connection = 2;
-// }
-
-// // ChannelStateData returns the SignBytes data for channel state
-// // verification.
-// message ChannelStateData {
-//   option (gogoproto.goproto_getters) = false;
-
-//   bytes path    = 1;
-//   bytes channel = 2;
-// }
-
-// // PacketCommitmentData returns the SignBytes data for packet commitment
-// // verification.
-// message PacketCommitmentData {
-//   bytes path       = 1;
-//   bytes commitment = 2;
-// }
-
-// // PacketAcknowledgementData returns the SignBytes data for acknowledgement
-// // verification.
-// message PacketAcknowledgementData {
-//   bytes path            = 1;
-//   bytes acknowledgement = 2;
-// }
-
-// // PacketReceiptAbsenceData returns the SignBytes data for
-// // packet receipt absence verification.
-// message PacketReceiptAbsenceData {
-//   bytes path = 1;
-// }
-
-// // NextSequenceRecvData returns the SignBytes data for verification of the next
-// // sequence to be received.
-// message NextSequenceRecvData {
-//   bytes  path          = 1;
-//   uint64 next_seq_recv = 2 [(gogoproto.moretags) = "yaml:\"next_seq_recv\""];
-// }

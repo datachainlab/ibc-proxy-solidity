@@ -83,7 +83,14 @@ contract MultisigClient is IClient {
     }
 
     function verifySignature(ConsensusState.Data memory consensusState, MultiSignature.Data memory multisig, bytes memory signBytes) public pure returns (bool) {
-      // TODO implements
+      require(consensusState.addresses.length == multisig.signatures.length, "signatures length mismatch");
+
+      for (uint i = 0; i < consensusState.addresses.length; i++) {
+        require(multisig.signatures[i].length == 0, "signature is empty");
+        address addr = ECRecovery.recover(keccak256(signBytes), multisig.signatures[i]);
+        require(consensusState.addresses[i].toAddress() == addr, "signer mismatch");
+      }
+
       return true;
     }
 
@@ -104,7 +111,7 @@ contract MultisigClient is IClient {
         return verifySignature(
           consensusState,
           MultiSignature.decode(proof),
-          getClientStateSignBytes(height, consensusState.timestamp, consensusState.diversifier, counterpartyClientIdentifier, clientStateBytes)
+          makeClientStateSignBytes(height, consensusState.timestamp, consensusState.diversifier, counterpartyClientIdentifier, clientStateBytes)
         );
     }
 
@@ -198,7 +205,7 @@ contract MultisigClient is IClient {
       return Header.decode(any.value);
     }
 
-    function getClientStateSignBytes(
+    function makeClientStateSignBytes(
       uint64 height,
       uint64 timestamp,
       string memory diversifier,
