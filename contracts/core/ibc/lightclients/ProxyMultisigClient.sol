@@ -212,7 +212,7 @@ contract ProxyMultisigClient is MultisigClient {
 
     function getProxyConsensusState(IBCHost host, string memory clientId, Height.Data memory height) public virtual view returns (ProxyConsensusState.Data memory consensusState, bool found) {
       bytes memory consensusStateBytes;
-      (consensusStateBytes, found) = host.getConsensusState(clientId, height.revision_number);
+      (consensusStateBytes, found) = host.getConsensusState(clientId, height.revision_height);
       if (!found) {
         return (consensusState, false);
       }
