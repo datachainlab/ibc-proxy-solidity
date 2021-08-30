@@ -51,7 +51,7 @@ type MultiSignatureData struct {
 }
 
 // MultisigclientABI is the input ABI used to generate the binding from.
-const MultisigclientABI = "[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"contractIBCHost\",\"name\":\"host\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"clientId\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"}],\"name\":\"getTimestampAtHeight\",\"outputs\":[{\"internalType\":\"uint64\",\"name\":\"\",\"type\":\"uint64\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"contractIBCHost\",\"name\":\"host\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"clientId\",\"type\":\"string\"}],\"name\":\"getLatestHeight\",\"outputs\":[{\"internalType\":\"uint64\",\"name\":\"\",\"type\":\"uint64\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"contractIBCHost\",\"name\":\"host\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"clientId\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"clientStateBytes\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"headerBytes\",\"type\":\"bytes\"}],\"name\":\"checkHeaderAndUpdateState\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"newClientStateBytes\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"newConsensusStateBytes\",\"type\":\"bytes\"},{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"components\":[{\"internalType\":\"bytes[]\",\"name\":\"addresses\",\"type\":\"bytes[]\"},{\"internalType\":\"string\",\"name\":\"diversifier\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"timestamp\",\"type\":\"uint64\"}],\"internalType\":\"structConsensusState.Data\",\"name\":\"consensusState\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"bytes[]\",\"name\":\"signatures\",\"type\":\"bytes[]\"}],\"internalType\":\"structMultiSignature.Data\",\"name\":\"multisig\",\"type\":\"tuple\"},{\"internalType\":\"bytes\",\"name\":\"signBytes\",\"type\":\"bytes\"}],\"name\":\"verifySignature\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"contractIBCHost\",\"name\":\"host\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"clientId\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"},{\"internalType\":\"string\",\"name\":\"counterpartyClientIdentifier\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"proof\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"clientStateBytes\",\"type\":\"bytes\"}],\"name\":\"verifyClientState\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"contractIBCHost\",\"name\":\"host\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"clientId\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"},{\"internalType\":\"string\",\"name\":\"counterpartyClientIdentifier\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"consensusHeight\",\"type\":\"uint64\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"proof\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"consensusStateBytes\",\"type\":\"bytes\"}],\"name\":\"verifyClientConsensusState\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"contractIBCHost\",\"name\":\"host\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"clientId\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"proof\",\"type\":\"bytes\"},{\"internalType\":\"string\",\"name\":\"connectionId\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"connectionBytes\",\"type\":\"bytes\"}],\"name\":\"verifyConnectionState\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"contractIBCHost\",\"name\":\"host\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"clientId\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"proof\",\"type\":\"bytes\"},{\"internalType\":\"string\",\"name\":\"portId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"channelId\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"channelBytes\",\"type\":\"bytes\"}],\"name\":\"verifyChannelState\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"contractIBCHost\",\"name\":\"host\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"clientId\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"proof\",\"type\":\"bytes\"},{\"internalType\":\"string\",\"name\":\"portId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"channelId\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"sequence\",\"type\":\"uint64\"},{\"internalType\":\"bytes32\",\"name\":\"commitmentBytes\",\"type\":\"bytes32\"}],\"name\":\"verifyPacketCommitment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"contractIBCHost\",\"name\":\"host\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"clientId\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"proof\",\"type\":\"bytes\"},{\"internalType\":\"string\",\"name\":\"portId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"channelId\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"sequence\",\"type\":\"uint64\"},{\"internalType\":\"bytes\",\"name\":\"acknowledgement\",\"type\":\"bytes\"}],\"name\":\"verifyPacketAcknowledgement\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"contractIBCHost\",\"name\":\"host\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"clientId\",\"type\":\"string\"}],\"name\":\"getClientState\",\"outputs\":[{\"components\":[{\"components\":[{\"internalType\":\"uint64\",\"name\":\"revision_number\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"revision_height\",\"type\":\"uint64\"}],\"internalType\":\"structHeight.Data\",\"name\":\"latest_height\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint64\",\"name\":\"revision_number\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"revision_height\",\"type\":\"uint64\"}],\"internalType\":\"structHeight.Data\",\"name\":\"frozen_height\",\"type\":\"tuple\"}],\"internalType\":\"structClientState.Data\",\"name\":\"clientState\",\"type\":\"tuple\"},{\"internalType\":\"bool\",\"name\":\"found\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"contractIBCHost\",\"name\":\"host\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"clientId\",\"type\":\"string\"},{\"components\":[{\"internalType\":\"uint64\",\"name\":\"revision_number\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"revision_height\",\"type\":\"uint64\"}],\"internalType\":\"structHeight.Data\",\"name\":\"height\",\"type\":\"tuple\"}],\"name\":\"getConsensusState\",\"outputs\":[{\"components\":[{\"internalType\":\"bytes[]\",\"name\":\"addresses\",\"type\":\"bytes[]\"},{\"internalType\":\"string\",\"name\":\"diversifier\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"timestamp\",\"type\":\"uint64\"}],\"internalType\":\"structConsensusState.Data\",\"name\":\"consensusState\",\"type\":\"tuple\"},{\"internalType\":\"bool\",\"name\":\"found\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"timestamp\",\"type\":\"uint64\"},{\"internalType\":\"string\",\"name\":\"diversifier\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"clientID\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"clientState\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"}],\"name\":\"makeClientStateSignBytes\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"pure\",\"type\":\"function\",\"constant\":true}]"
+const MultisigclientABI = "[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"contractIBCHost\",\"name\":\"host\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"clientId\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"}],\"name\":\"getTimestampAtHeight\",\"outputs\":[{\"internalType\":\"uint64\",\"name\":\"\",\"type\":\"uint64\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"contractIBCHost\",\"name\":\"host\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"clientId\",\"type\":\"string\"}],\"name\":\"getLatestHeight\",\"outputs\":[{\"internalType\":\"uint64\",\"name\":\"\",\"type\":\"uint64\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"contractIBCHost\",\"name\":\"host\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"clientId\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"clientStateBytes\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"headerBytes\",\"type\":\"bytes\"}],\"name\":\"checkHeaderAndUpdateState\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"newClientStateBytes\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"newConsensusStateBytes\",\"type\":\"bytes\"},{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"components\":[{\"internalType\":\"bytes[]\",\"name\":\"addresses\",\"type\":\"bytes[]\"},{\"internalType\":\"string\",\"name\":\"diversifier\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"timestamp\",\"type\":\"uint64\"}],\"internalType\":\"structConsensusState.Data\",\"name\":\"consensusState\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"bytes[]\",\"name\":\"signatures\",\"type\":\"bytes[]\"}],\"internalType\":\"structMultiSignature.Data\",\"name\":\"multisig\",\"type\":\"tuple\"},{\"internalType\":\"bytes\",\"name\":\"signBytes\",\"type\":\"bytes\"}],\"name\":\"verifySignature\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"contractIBCHost\",\"name\":\"host\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"clientId\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"},{\"internalType\":\"string\",\"name\":\"counterpartyClientIdentifier\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"proof\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"clientStateBytes\",\"type\":\"bytes\"}],\"name\":\"verifyClientState\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"contractIBCHost\",\"name\":\"host\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"clientId\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"},{\"internalType\":\"string\",\"name\":\"counterpartyClientIdentifier\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"consensusHeight\",\"type\":\"uint64\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"proof\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"consensusStateBytes\",\"type\":\"bytes\"}],\"name\":\"verifyClientConsensusState\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"contractIBCHost\",\"name\":\"host\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"clientId\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"proof\",\"type\":\"bytes\"},{\"internalType\":\"string\",\"name\":\"connectionId\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"connectionBytes\",\"type\":\"bytes\"}],\"name\":\"verifyConnectionState\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"contractIBCHost\",\"name\":\"host\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"clientId\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"proof\",\"type\":\"bytes\"},{\"internalType\":\"string\",\"name\":\"portId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"channelId\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"channelBytes\",\"type\":\"bytes\"}],\"name\":\"verifyChannelState\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"contractIBCHost\",\"name\":\"host\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"clientId\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"proof\",\"type\":\"bytes\"},{\"internalType\":\"string\",\"name\":\"portId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"channelId\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"sequence\",\"type\":\"uint64\"},{\"internalType\":\"bytes32\",\"name\":\"commitmentBytes\",\"type\":\"bytes32\"}],\"name\":\"verifyPacketCommitment\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"contractIBCHost\",\"name\":\"host\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"clientId\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"proof\",\"type\":\"bytes\"},{\"internalType\":\"string\",\"name\":\"portId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"channelId\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"sequence\",\"type\":\"uint64\"},{\"internalType\":\"bytes\",\"name\":\"acknowledgement\",\"type\":\"bytes\"}],\"name\":\"verifyPacketAcknowledgement\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"contractIBCHost\",\"name\":\"host\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"clientId\",\"type\":\"string\"}],\"name\":\"getClientState\",\"outputs\":[{\"components\":[{\"components\":[{\"internalType\":\"uint64\",\"name\":\"revision_number\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"revision_height\",\"type\":\"uint64\"}],\"internalType\":\"structHeight.Data\",\"name\":\"latest_height\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint64\",\"name\":\"revision_number\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"revision_height\",\"type\":\"uint64\"}],\"internalType\":\"structHeight.Data\",\"name\":\"frozen_height\",\"type\":\"tuple\"}],\"internalType\":\"structClientState.Data\",\"name\":\"clientState\",\"type\":\"tuple\"},{\"internalType\":\"bool\",\"name\":\"found\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"contractIBCHost\",\"name\":\"host\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"clientId\",\"type\":\"string\"},{\"components\":[{\"internalType\":\"uint64\",\"name\":\"revision_number\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"revision_height\",\"type\":\"uint64\"}],\"internalType\":\"structHeight.Data\",\"name\":\"height\",\"type\":\"tuple\"}],\"name\":\"getConsensusState\",\"outputs\":[{\"components\":[{\"internalType\":\"bytes[]\",\"name\":\"addresses\",\"type\":\"bytes[]\"},{\"internalType\":\"string\",\"name\":\"diversifier\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"timestamp\",\"type\":\"uint64\"}],\"internalType\":\"structConsensusState.Data\",\"name\":\"consensusState\",\"type\":\"tuple\"},{\"internalType\":\"bool\",\"name\":\"found\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"timestamp\",\"type\":\"uint64\"},{\"internalType\":\"string\",\"name\":\"diversifier\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"clientID\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"clientState\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"}],\"name\":\"makeClientStateSignBytes\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"pure\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"timestamp\",\"type\":\"uint64\"},{\"internalType\":\"string\",\"name\":\"diversifier\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"clientID\",\"type\":\"string\"},{\"internalType\":\"uint64\",\"name\":\"consensusHeight\",\"type\":\"uint64\"},{\"internalType\":\"bytes\",\"name\":\"consensusState\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"}],\"name\":\"makeConsensusStateSignBytes\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"pure\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"timestamp\",\"type\":\"uint64\"},{\"internalType\":\"string\",\"name\":\"diversifier\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"connectionID\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"connection\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"}],\"name\":\"makeConnectionStateSignBytes\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"pure\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"timestamp\",\"type\":\"uint64\"},{\"internalType\":\"string\",\"name\":\"diversifier\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"portID\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"channelID\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"channel\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"}],\"name\":\"makeChannelStateSignBytes\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"pure\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"timestamp\",\"type\":\"uint64\"},{\"internalType\":\"string\",\"name\":\"diversifier\",\"type\":\"string\"},{\"internalType\":\"bytes32\",\"name\":\"path\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"packetCommitment\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"}],\"name\":\"makePacketSignBytes\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"pure\",\"type\":\"function\",\"constant\":true},{\"inputs\":[{\"internalType\":\"uint64\",\"name\":\"height\",\"type\":\"uint64\"},{\"internalType\":\"uint64\",\"name\":\"timestamp\",\"type\":\"uint64\"},{\"internalType\":\"string\",\"name\":\"diversifier\",\"type\":\"string\"},{\"internalType\":\"bytes32\",\"name\":\"path\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"packetAcknowledgement\",\"type\":\"bytes\"},{\"internalType\":\"bytes\",\"name\":\"prefix\",\"type\":\"bytes\"}],\"name\":\"makePacketAcknowledgementSignBytes\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"pure\",\"type\":\"function\",\"constant\":true}]"
 
 // Multisigclient is an auto generated Go binding around an Ethereum contract.
 type Multisigclient struct {
@@ -399,6 +399,37 @@ func (_Multisigclient *MultisigclientCallerSession) GetTimestampAtHeight(host co
 	return _Multisigclient.Contract.GetTimestampAtHeight(&_Multisigclient.CallOpts, host, clientId, height)
 }
 
+// MakeChannelStateSignBytes is a free data retrieval call binding the contract method 0x81b4e822.
+//
+// Solidity: function makeChannelStateSignBytes(uint64 height, uint64 timestamp, string diversifier, string portID, string channelID, bytes channel, bytes prefix) pure returns(bytes)
+func (_Multisigclient *MultisigclientCaller) MakeChannelStateSignBytes(opts *bind.CallOpts, height uint64, timestamp uint64, diversifier string, portID string, channelID string, channel []byte, prefix []byte) ([]byte, error) {
+	var out []interface{}
+	err := _Multisigclient.contract.Call(opts, &out, "makeChannelStateSignBytes", height, timestamp, diversifier, portID, channelID, channel, prefix)
+
+	if err != nil {
+		return *new([]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]byte)).(*[]byte)
+
+	return out0, err
+
+}
+
+// MakeChannelStateSignBytes is a free data retrieval call binding the contract method 0x81b4e822.
+//
+// Solidity: function makeChannelStateSignBytes(uint64 height, uint64 timestamp, string diversifier, string portID, string channelID, bytes channel, bytes prefix) pure returns(bytes)
+func (_Multisigclient *MultisigclientSession) MakeChannelStateSignBytes(height uint64, timestamp uint64, diversifier string, portID string, channelID string, channel []byte, prefix []byte) ([]byte, error) {
+	return _Multisigclient.Contract.MakeChannelStateSignBytes(&_Multisigclient.CallOpts, height, timestamp, diversifier, portID, channelID, channel, prefix)
+}
+
+// MakeChannelStateSignBytes is a free data retrieval call binding the contract method 0x81b4e822.
+//
+// Solidity: function makeChannelStateSignBytes(uint64 height, uint64 timestamp, string diversifier, string portID, string channelID, bytes channel, bytes prefix) pure returns(bytes)
+func (_Multisigclient *MultisigclientCallerSession) MakeChannelStateSignBytes(height uint64, timestamp uint64, diversifier string, portID string, channelID string, channel []byte, prefix []byte) ([]byte, error) {
+	return _Multisigclient.Contract.MakeChannelStateSignBytes(&_Multisigclient.CallOpts, height, timestamp, diversifier, portID, channelID, channel, prefix)
+}
+
 // MakeClientStateSignBytes is a free data retrieval call binding the contract method 0x464cb82f.
 //
 // Solidity: function makeClientStateSignBytes(uint64 height, uint64 timestamp, string diversifier, string clientID, bytes clientState, bytes prefix) pure returns(bytes)
@@ -428,6 +459,130 @@ func (_Multisigclient *MultisigclientSession) MakeClientStateSignBytes(height ui
 // Solidity: function makeClientStateSignBytes(uint64 height, uint64 timestamp, string diversifier, string clientID, bytes clientState, bytes prefix) pure returns(bytes)
 func (_Multisigclient *MultisigclientCallerSession) MakeClientStateSignBytes(height uint64, timestamp uint64, diversifier string, clientID string, clientState []byte, prefix []byte) ([]byte, error) {
 	return _Multisigclient.Contract.MakeClientStateSignBytes(&_Multisigclient.CallOpts, height, timestamp, diversifier, clientID, clientState, prefix)
+}
+
+// MakeConnectionStateSignBytes is a free data retrieval call binding the contract method 0x4438375e.
+//
+// Solidity: function makeConnectionStateSignBytes(uint64 height, uint64 timestamp, string diversifier, string connectionID, bytes connection, bytes prefix) pure returns(bytes)
+func (_Multisigclient *MultisigclientCaller) MakeConnectionStateSignBytes(opts *bind.CallOpts, height uint64, timestamp uint64, diversifier string, connectionID string, connection []byte, prefix []byte) ([]byte, error) {
+	var out []interface{}
+	err := _Multisigclient.contract.Call(opts, &out, "makeConnectionStateSignBytes", height, timestamp, diversifier, connectionID, connection, prefix)
+
+	if err != nil {
+		return *new([]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]byte)).(*[]byte)
+
+	return out0, err
+
+}
+
+// MakeConnectionStateSignBytes is a free data retrieval call binding the contract method 0x4438375e.
+//
+// Solidity: function makeConnectionStateSignBytes(uint64 height, uint64 timestamp, string diversifier, string connectionID, bytes connection, bytes prefix) pure returns(bytes)
+func (_Multisigclient *MultisigclientSession) MakeConnectionStateSignBytes(height uint64, timestamp uint64, diversifier string, connectionID string, connection []byte, prefix []byte) ([]byte, error) {
+	return _Multisigclient.Contract.MakeConnectionStateSignBytes(&_Multisigclient.CallOpts, height, timestamp, diversifier, connectionID, connection, prefix)
+}
+
+// MakeConnectionStateSignBytes is a free data retrieval call binding the contract method 0x4438375e.
+//
+// Solidity: function makeConnectionStateSignBytes(uint64 height, uint64 timestamp, string diversifier, string connectionID, bytes connection, bytes prefix) pure returns(bytes)
+func (_Multisigclient *MultisigclientCallerSession) MakeConnectionStateSignBytes(height uint64, timestamp uint64, diversifier string, connectionID string, connection []byte, prefix []byte) ([]byte, error) {
+	return _Multisigclient.Contract.MakeConnectionStateSignBytes(&_Multisigclient.CallOpts, height, timestamp, diversifier, connectionID, connection, prefix)
+}
+
+// MakeConsensusStateSignBytes is a free data retrieval call binding the contract method 0x4125d9e9.
+//
+// Solidity: function makeConsensusStateSignBytes(uint64 height, uint64 timestamp, string diversifier, string clientID, uint64 consensusHeight, bytes consensusState, bytes prefix) pure returns(bytes)
+func (_Multisigclient *MultisigclientCaller) MakeConsensusStateSignBytes(opts *bind.CallOpts, height uint64, timestamp uint64, diversifier string, clientID string, consensusHeight uint64, consensusState []byte, prefix []byte) ([]byte, error) {
+	var out []interface{}
+	err := _Multisigclient.contract.Call(opts, &out, "makeConsensusStateSignBytes", height, timestamp, diversifier, clientID, consensusHeight, consensusState, prefix)
+
+	if err != nil {
+		return *new([]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]byte)).(*[]byte)
+
+	return out0, err
+
+}
+
+// MakeConsensusStateSignBytes is a free data retrieval call binding the contract method 0x4125d9e9.
+//
+// Solidity: function makeConsensusStateSignBytes(uint64 height, uint64 timestamp, string diversifier, string clientID, uint64 consensusHeight, bytes consensusState, bytes prefix) pure returns(bytes)
+func (_Multisigclient *MultisigclientSession) MakeConsensusStateSignBytes(height uint64, timestamp uint64, diversifier string, clientID string, consensusHeight uint64, consensusState []byte, prefix []byte) ([]byte, error) {
+	return _Multisigclient.Contract.MakeConsensusStateSignBytes(&_Multisigclient.CallOpts, height, timestamp, diversifier, clientID, consensusHeight, consensusState, prefix)
+}
+
+// MakeConsensusStateSignBytes is a free data retrieval call binding the contract method 0x4125d9e9.
+//
+// Solidity: function makeConsensusStateSignBytes(uint64 height, uint64 timestamp, string diversifier, string clientID, uint64 consensusHeight, bytes consensusState, bytes prefix) pure returns(bytes)
+func (_Multisigclient *MultisigclientCallerSession) MakeConsensusStateSignBytes(height uint64, timestamp uint64, diversifier string, clientID string, consensusHeight uint64, consensusState []byte, prefix []byte) ([]byte, error) {
+	return _Multisigclient.Contract.MakeConsensusStateSignBytes(&_Multisigclient.CallOpts, height, timestamp, diversifier, clientID, consensusHeight, consensusState, prefix)
+}
+
+// MakePacketAcknowledgementSignBytes is a free data retrieval call binding the contract method 0x0b94538d.
+//
+// Solidity: function makePacketAcknowledgementSignBytes(uint64 height, uint64 timestamp, string diversifier, bytes32 path, bytes packetAcknowledgement, bytes prefix) pure returns(bytes)
+func (_Multisigclient *MultisigclientCaller) MakePacketAcknowledgementSignBytes(opts *bind.CallOpts, height uint64, timestamp uint64, diversifier string, path [32]byte, packetAcknowledgement []byte, prefix []byte) ([]byte, error) {
+	var out []interface{}
+	err := _Multisigclient.contract.Call(opts, &out, "makePacketAcknowledgementSignBytes", height, timestamp, diversifier, path, packetAcknowledgement, prefix)
+
+	if err != nil {
+		return *new([]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]byte)).(*[]byte)
+
+	return out0, err
+
+}
+
+// MakePacketAcknowledgementSignBytes is a free data retrieval call binding the contract method 0x0b94538d.
+//
+// Solidity: function makePacketAcknowledgementSignBytes(uint64 height, uint64 timestamp, string diversifier, bytes32 path, bytes packetAcknowledgement, bytes prefix) pure returns(bytes)
+func (_Multisigclient *MultisigclientSession) MakePacketAcknowledgementSignBytes(height uint64, timestamp uint64, diversifier string, path [32]byte, packetAcknowledgement []byte, prefix []byte) ([]byte, error) {
+	return _Multisigclient.Contract.MakePacketAcknowledgementSignBytes(&_Multisigclient.CallOpts, height, timestamp, diversifier, path, packetAcknowledgement, prefix)
+}
+
+// MakePacketAcknowledgementSignBytes is a free data retrieval call binding the contract method 0x0b94538d.
+//
+// Solidity: function makePacketAcknowledgementSignBytes(uint64 height, uint64 timestamp, string diversifier, bytes32 path, bytes packetAcknowledgement, bytes prefix) pure returns(bytes)
+func (_Multisigclient *MultisigclientCallerSession) MakePacketAcknowledgementSignBytes(height uint64, timestamp uint64, diversifier string, path [32]byte, packetAcknowledgement []byte, prefix []byte) ([]byte, error) {
+	return _Multisigclient.Contract.MakePacketAcknowledgementSignBytes(&_Multisigclient.CallOpts, height, timestamp, diversifier, path, packetAcknowledgement, prefix)
+}
+
+// MakePacketSignBytes is a free data retrieval call binding the contract method 0xfc1b3803.
+//
+// Solidity: function makePacketSignBytes(uint64 height, uint64 timestamp, string diversifier, bytes32 path, bytes32 packetCommitment, bytes prefix) pure returns(bytes)
+func (_Multisigclient *MultisigclientCaller) MakePacketSignBytes(opts *bind.CallOpts, height uint64, timestamp uint64, diversifier string, path [32]byte, packetCommitment [32]byte, prefix []byte) ([]byte, error) {
+	var out []interface{}
+	err := _Multisigclient.contract.Call(opts, &out, "makePacketSignBytes", height, timestamp, diversifier, path, packetCommitment, prefix)
+
+	if err != nil {
+		return *new([]byte), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]byte)).(*[]byte)
+
+	return out0, err
+
+}
+
+// MakePacketSignBytes is a free data retrieval call binding the contract method 0xfc1b3803.
+//
+// Solidity: function makePacketSignBytes(uint64 height, uint64 timestamp, string diversifier, bytes32 path, bytes32 packetCommitment, bytes prefix) pure returns(bytes)
+func (_Multisigclient *MultisigclientSession) MakePacketSignBytes(height uint64, timestamp uint64, diversifier string, path [32]byte, packetCommitment [32]byte, prefix []byte) ([]byte, error) {
+	return _Multisigclient.Contract.MakePacketSignBytes(&_Multisigclient.CallOpts, height, timestamp, diversifier, path, packetCommitment, prefix)
+}
+
+// MakePacketSignBytes is a free data retrieval call binding the contract method 0xfc1b3803.
+//
+// Solidity: function makePacketSignBytes(uint64 height, uint64 timestamp, string diversifier, bytes32 path, bytes32 packetCommitment, bytes prefix) pure returns(bytes)
+func (_Multisigclient *MultisigclientCallerSession) MakePacketSignBytes(height uint64, timestamp uint64, diversifier string, path [32]byte, packetCommitment [32]byte, prefix []byte) ([]byte, error) {
+	return _Multisigclient.Contract.MakePacketSignBytes(&_Multisigclient.CallOpts, height, timestamp, diversifier, path, packetCommitment, prefix)
 }
 
 // VerifyChannelState is a free data retrieval call binding the contract method 0x6455eb57.

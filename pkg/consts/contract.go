@@ -5,9 +5,9 @@ import (
 )
 
 const (
-	MultisigClientAddress = "0x361552A65C96621003C62C5971b910a1fdC9ba78"
-	ProxyMultisigClientAddress = "0x9eBF3956EE45B2b9F1fC85FB8990ce6be52F47a6"
-	IBCHostAddress = "0x727A5648832D2b317925CE043eA9b7fE04B4CD55"
+	MultisigClientAddress = "0x6dE8E613E024De9FEE0759A016ff9BA80b668bFf"
+	ProxyMultisigClientAddress = "0x4dc66A31643AA3f20E0D36CA21D7E0f24FbB63ca"
+	IBCHostAddress = "0xdBB3621D708E159995754D3816f19757a8Cc945F"
 )
 
 type contractConfig struct{}

@@ -83,15 +83,15 @@ contract MultisigClient is IClient {
     }
 
     function verifySignature(ConsensusState.Data memory consensusState, MultiSignature.Data memory multisig, bytes memory signBytes) public pure returns (bool) {
-      require(consensusState.addresses.length == multisig.signatures.length, "signatures length mismatch");
+        require(consensusState.addresses.length == multisig.signatures.length, "signatures length mismatch");
 
-      for (uint i = 0; i < consensusState.addresses.length; i++) {
-        require(multisig.signatures[i].length > 0, "signature is empty");
-        address addr = ECRecovery.recover(keccak256(signBytes), multisig.signatures[i]);
-        require(consensusState.addresses[i].toAddress() == addr, "signer mismatch");
-      }
+        for (uint i = 0; i < consensusState.addresses.length; i++) {
+            require(multisig.signatures[i].length > 0, "signature is empty");
+            address addr = ECRecovery.recover(keccak256(signBytes), multisig.signatures[i]);
+            require(consensusState.addresses[i].toAddress() == addr, "signer mismatch");
+        }
 
-      return true;
+        return true;
     }
 
     function verifyClientState(
@@ -107,11 +107,10 @@ contract MultisigClient is IClient {
         bool found;
         (consensusState, found) = getConsensusState(host, clientId, getConsensusHeight(height));
         require(found, "consensus state not found");
-
         return verifySignature(
-          consensusState,
-          MultiSignature.decode(proof),
-          makeClientStateSignBytes(height, consensusState.timestamp, consensusState.diversifier, counterpartyClientIdentifier, clientStateBytes, prefix)
+            consensusState,
+            MultiSignature.decode(proof),
+            makeClientStateSignBytes(height, consensusState.timestamp, consensusState.diversifier, counterpartyClientIdentifier, clientStateBytes, prefix)
         );
     }
 
@@ -125,7 +124,15 @@ contract MultisigClient is IClient {
         bytes memory proof,
         bytes memory consensusStateBytes // serialized with pb
     ) public virtual override view returns (bool) {
-      revert("not implemented error");
+        ConsensusState.Data memory consensusState;
+        bool found;
+        (consensusState, found) = getConsensusState(host, clientId, getConsensusHeight(height));
+        require(found, "consensus state not found");
+        return verifySignature(
+            consensusState,
+            MultiSignature.decode(proof),
+            makeConsensusStateSignBytes(height, consensusState.timestamp, consensusState.diversifier, counterpartyClientIdentifier, consensusHeight, consensusStateBytes, prefix)
+        );
     }
 
     function verifyConnectionState(
@@ -137,7 +144,15 @@ contract MultisigClient is IClient {
         string memory connectionId,
         bytes memory connectionBytes // serialized with pb
     ) public virtual override view returns (bool) {
-      revert("not implemented error");
+        ConsensusState.Data memory consensusState;
+        bool found;
+        (consensusState, found) = getConsensusState(host, clientId, getConsensusHeight(height));
+        require(found, "consensus state not found");
+        return verifySignature(
+            consensusState,
+            MultiSignature.decode(proof),
+            makeConnectionStateSignBytes(height, consensusState.timestamp, consensusState.diversifier, connectionId, connectionBytes, prefix)
+        );
     }
 
     function verifyChannelState(
@@ -150,7 +165,16 @@ contract MultisigClient is IClient {
         string memory channelId,
         bytes memory channelBytes // serialized with pb
     ) public virtual override view returns (bool) {
-      revert("not implemented error");
+        ConsensusState.Data memory consensusState;
+        bool found;
+        (consensusState, found) = getConsensusState(host, clientId, getConsensusHeight(height));
+        require(found, "consensus state not found");
+        bytes memory signBytes = makeChannelStateSignBytes(height, consensusState.timestamp, consensusState.diversifier, portId, channelId, channelBytes, prefix);
+        return verifySignature(
+            consensusState,
+            MultiSignature.decode(proof),
+            signBytes
+        );
     }
 
     function verifyPacketCommitment(
@@ -164,7 +188,18 @@ contract MultisigClient is IClient {
         uint64 sequence,
         bytes32 commitmentBytes
     ) public virtual override view returns (bool) {
-      revert("not implemented error");
+        ConsensusState.Data memory consensusState;
+        {
+            bool found;
+            (consensusState, found) = getConsensusState(host, clientId, getConsensusHeight(height));
+            require(found, "consensus state not found");
+        }
+        bytes memory signBytes = makePacketSignBytes(height, consensusState.timestamp, consensusState.diversifier, IBCIdentifier.packetCommitmentSlot(portId, channelId, sequence), commitmentBytes, prefix);
+        return verifySignature(
+            consensusState,
+            MultiSignature.decode(proof),
+            signBytes
+        );
     }
 
     function verifyPacketAcknowledgement(
@@ -178,7 +213,18 @@ contract MultisigClient is IClient {
         uint64 sequence,
         bytes memory acknowledgement
     ) public virtual override view returns (bool) {
-      revert("not implemented error");
+        ConsensusState.Data memory consensusState;
+        {
+            bool found;
+            (consensusState, found) = getConsensusState(host, clientId, getConsensusHeight(height));
+            require(found, "consensus state not found");
+        }
+        bytes memory signBytes = makePacketAcknowledgementSignBytes(height, consensusState.timestamp, consensusState.diversifier, IBCIdentifier.packetAcknowledgementCommitmentSlot(portId, channelId, sequence), acknowledgement, prefix);
+        return verifySignature(
+            consensusState,
+            MultiSignature.decode(proof),
+            signBytes
+        );
     }
 
     function getClientState(IBCHost host, string memory clientId) public virtual view returns (ClientState.Data memory clientState, bool found) {
@@ -206,12 +252,12 @@ contract MultisigClient is IClient {
     }
 
     function makeClientStateSignBytes(
-      uint64 height,
-      uint64 timestamp,
-      string memory diversifier,
-      string memory clientID,
-      bytes memory clientState,
-      bytes memory prefix
+        uint64 height,
+        uint64 timestamp,
+        string memory diversifier,
+        string memory clientID,
+        bytes memory clientState,
+        bytes memory prefix
     ) public pure returns (bytes memory) {
       return SignBytes.encode(
         SignBytes.Data({
@@ -229,5 +275,127 @@ contract MultisigClient is IClient {
           )
         })
       );
+    }
+
+    function makeConsensusStateSignBytes(
+        uint64 height,
+        uint64 timestamp,
+        string memory diversifier,
+        string memory clientID,
+        uint64 consensusHeight,
+        bytes memory consensusState,
+        bytes memory prefix
+    ) public pure returns (bytes memory) {
+        return SignBytes.encode(
+            SignBytes.Data({
+                height: Height.Data({revision_number: 0, revision_height: height}),
+                timestamp: timestamp,
+                diversifier: diversifier,
+                data_type: SignBytes.DataType.DATA_TYPE_CONSENSUS_STATE,
+                data: StateData.encode(
+                    StateData.Data({
+                        path: abi.encodePacked(prefix, IBCIdentifier.consensusCommitmentKey(clientID, consensusHeight)),
+                        value: consensusState
+                    })
+                )
+            })
+        );
+    }
+
+    function makeConnectionStateSignBytes(
+        uint64 height,
+        uint64 timestamp,
+        string memory diversifier,
+        string memory connectionID,
+        bytes memory connection,
+        bytes memory prefix
+    ) public pure returns (bytes memory) {
+        return SignBytes.encode(
+            SignBytes.Data({
+                height: Height.Data({revision_number: 0, revision_height: height}),
+                timestamp: timestamp,
+                diversifier: diversifier,
+                data_type: SignBytes.DataType.DATA_TYPE_CONNECTION_STATE,
+                data: StateData.encode(
+                    StateData.Data({
+                        path: abi.encodePacked(prefix, IBCIdentifier.connectionCommitmentKey(connectionID)),
+                        value: connection
+                    })
+                )
+            })
+        );
+    }
+
+    function makeChannelStateSignBytes(
+        uint64 height,
+        uint64 timestamp,
+        string memory diversifier,
+        string memory portID,
+        string memory channelID,
+        bytes memory channel,
+        bytes memory prefix
+    ) public pure returns (bytes memory) {
+        return SignBytes.encode(
+            SignBytes.Data({
+                height: Height.Data({revision_number: 0, revision_height: height}),
+                timestamp: timestamp,
+                diversifier: diversifier,
+                data_type: SignBytes.DataType.DATA_TYPE_CHANNEL_STATE,
+                data: StateData.encode(
+                    StateData.Data({
+                        path: abi.encodePacked(prefix, IBCIdentifier.channelCommitmentKey(portID, channelID)),
+                        value: channel
+                    })
+                )
+            })
+        );
+    }
+
+    function makePacketSignBytes(
+        uint64 height,
+        uint64 timestamp,
+        string memory diversifier,
+        bytes32 path,
+        bytes32 packetCommitment,
+        bytes memory prefix
+    ) public pure returns (bytes memory) {
+        return SignBytes.encode(
+            SignBytes.Data({
+                height: Height.Data({revision_number: 0, revision_height: height}),
+                timestamp: timestamp,
+                diversifier: diversifier,
+                data_type: SignBytes.DataType.DATA_TYPE_PACKET_COMMITMENT,
+                data: StateData.encode(
+                    StateData.Data({
+                        path: abi.encodePacked(prefix, path),
+                        value: abi.encodePacked(packetCommitment)
+                    })
+                )
+            })
+        );
+    }
+
+    function makePacketAcknowledgementSignBytes(
+        uint64 height,
+        uint64 timestamp,
+        string memory diversifier,
+        bytes32 path,
+        bytes memory packetAcknowledgement,
+        bytes memory prefix
+    ) public pure returns (bytes memory) {
+        return SignBytes.encode(
+            SignBytes.Data({
+                height: Height.Data({revision_number: 0, revision_height: height}),
+                timestamp: timestamp,
+                diversifier: diversifier,
+                data_type: SignBytes.DataType.DATA_TYPE_PACKET_ACKNOWLEDGEMENT,
+                data: StateData.encode(
+                    StateData.Data({
+                        path: abi.encodePacked(prefix, path),
+                        value: abi.encodePacked(sha256(packetAcknowledgement))
+                    })
+                )
+            })
+        );
     }
 }
