@@ -72,7 +72,7 @@ contract ProxyMultisigClient is MultisigClient {
           host,
           clientId,
           height,
-          makeProxyCommitmentPrefix(clientState.proxy_prefix.key_prefix, prefix),
+          makeProxyCommitmentPrefix(clientState.proxy_prefix.key_prefix, clientState.upstream_client_id, prefix),
           counterpartyClientIdentifier,
           proof,
           clientStateBytes
@@ -97,7 +97,7 @@ contract ProxyMultisigClient is MultisigClient {
           height,
           counterpartyClientIdentifier,
           consensusHeight,
-          makeProxyCommitmentPrefix(clientState.proxy_prefix.key_prefix, prefix),
+          makeProxyCommitmentPrefix(clientState.proxy_prefix.key_prefix, clientState.upstream_client_id, prefix),
           proof,
           consensusStateBytes
         );
@@ -118,7 +118,7 @@ contract ProxyMultisigClient is MultisigClient {
         host,
         clientId,
         height,
-        makeProxyCommitmentPrefix(clientState.proxy_prefix.key_prefix, prefix),
+        makeProxyCommitmentPrefix(clientState.proxy_prefix.key_prefix, clientState.upstream_client_id, prefix),
         proof,
         connectionId,
         connectionBytes
@@ -141,7 +141,7 @@ contract ProxyMultisigClient is MultisigClient {
         host,
         clientId,
         height,
-        makeProxyCommitmentPrefix(clientState.proxy_prefix.key_prefix, prefix),
+        makeProxyCommitmentPrefix(clientState.proxy_prefix.key_prefix, clientState.upstream_client_id, prefix),
         proof,
         portId,
         channelId,
@@ -166,7 +166,7 @@ contract ProxyMultisigClient is MultisigClient {
         host,
         clientId,
         height,
-        makeProxyCommitmentPrefix(clientState.proxy_prefix.key_prefix, prefix),
+        makeProxyCommitmentPrefix(clientState.proxy_prefix.key_prefix, clientState.upstream_client_id, prefix),
         proof,
         portId,
         channelId,
@@ -192,7 +192,7 @@ contract ProxyMultisigClient is MultisigClient {
             host,
             clientId,
             height,
-            makeProxyCommitmentPrefix(clientState.proxy_prefix.key_prefix, prefix),
+            makeProxyCommitmentPrefix(clientState.proxy_prefix.key_prefix, clientState.upstream_client_id, prefix),
             proof,
             portId,
             channelId,
@@ -246,7 +246,7 @@ contract ProxyMultisigClient is MultisigClient {
       );
     }
 
-    function makeProxyCommitmentPrefix(bytes memory proxyKeyPrefix, bytes memory counterpartyPrefix) public pure returns (bytes memory) {
-      return abi.encodePacked(proxyKeyPrefix, counterpartyPrefix);
+    function makeProxyCommitmentPrefix(bytes memory proxyKeyPrefix, string memory upstreamClientId, bytes memory counterpartyPrefix) public pure returns (bytes memory) {
+      return abi.encodePacked(proxyKeyPrefix, upstreamClientId, counterpartyPrefix);
     }
 }
