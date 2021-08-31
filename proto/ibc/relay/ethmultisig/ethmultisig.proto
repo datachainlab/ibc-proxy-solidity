@@ -6,7 +6,8 @@ import "gogoproto/gogo.proto";
 import "google/protobuf/any.proto";
 
 message ProverConfig {
-  repeated HDWallet wallets = 1;
+  string diversifier = 1;
+  repeated HDWallet wallets = 2;
 }
 
 message HDWallet {

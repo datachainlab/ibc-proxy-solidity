@@ -11,6 +11,7 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/modules/core/exported"
 	ethmultisigclient "github.com/datachainlab/ibc-proxy-solidity/modules/light-clients/xx-ethmultisig/types"
 	"github.com/datachainlab/ibc-proxy-solidity/modules/relay/ethmultisig/wallet"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/hyperledger-labs/yui-relayer/core"
 )
 
@@ -21,6 +22,7 @@ func (pr ProverConfig) Build(chain core.ChainI) (core.ProverI, error) {
 		return nil, fmt.Errorf("at least one wallet is needed")
 	}
 	var prover Prover
+	prover.diversifier = pr.Diversifier
 	for _, w := range pr.Wallets {
 		prv, err := wallet.GetPrvKeyFromMnemonicAndHDWPath(w.HdwPath, w.Mnemonic)
 		if err != nil {
@@ -34,7 +36,8 @@ func (pr ProverConfig) Build(chain core.ChainI) (core.ProverI, error) {
 type Prover struct {
 	chain core.ChainI
 
-	keys []*ecdsa.PrivateKey
+	diversifier string
+	keys        []*ecdsa.PrivateKey
 }
 
 var _ core.ProverI = (*Prover)(nil)
@@ -56,7 +59,20 @@ func (pr *Prover) GetLatestLightHeight() (int64, error) {
 
 // CreateMsgCreateClient creates a CreateClientMsg to this chain
 func (pr *Prover) CreateMsgCreateClient(clientID string, dstHeader core.HeaderI, signer sdk.AccAddress) (*clienttypes.MsgCreateClient, error) {
-	panic("not implemented") // TODO: Implement
+	var addresses [][]byte
+	for _, key := range pr.keys {
+		addr := crypto.PubkeyToAddress(key.PublicKey)
+		addresses = append(addresses, addr.Bytes())
+	}
+	clientState := &ethmultisigclient.ClientState{
+		LatestHeight: ethmultisigclient.Height{RevisionNumber: 0, RevisionHeight: 1},
+	}
+	consensusState := &ethmultisigclient.ConsensusState{
+		Addresses:   addresses,
+		Diversifier: pr.diversifier,
+		Timestamp:   0,
+	}
+	return clienttypes.NewMsgCreateClient(clientState, consensusState, signer.String())
 }
 
 // SetupHeader creates a new header based on a given header
