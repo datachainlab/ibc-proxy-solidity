@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option go_package = "github.com/datachainlab/ibc-proxy-solidity/modules/relay/ethmultisig";
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/any.proto";
+
+message ProverConfig {
+  repeated HDWallet wallets = 1;
+}
+
+message HDWallet {
+  string mnemonic = 1;
+  string hdw_path = 2;
+}
