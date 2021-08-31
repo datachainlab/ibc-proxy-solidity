@@ -46,7 +46,8 @@ message Height {
 }
 
 message MultiSignature {
-  repeated bytes signatures = 2;
+  repeated bytes signatures = 1;
+  uint64 timestamp = 2;
 }
 
 message SignBytes {

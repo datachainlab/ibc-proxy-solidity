@@ -110,7 +110,7 @@ contract MultisigClient is IClient {
         return verifySignature(
             consensusState,
             MultiSignature.decode(proof),
-            makeClientStateSignBytes(height, consensusState.timestamp, consensusState.diversifier, counterpartyClientIdentifier, clientStateBytes, prefix)
+            makeClientStateSignBytes(height, MultiSignature.decode(proof).timestamp, consensusState.diversifier, counterpartyClientIdentifier, clientStateBytes, prefix)
         );
     }
 
@@ -131,7 +131,7 @@ contract MultisigClient is IClient {
         return verifySignature(
             consensusState,
             MultiSignature.decode(proof),
-            makeConsensusStateSignBytes(height, consensusState.timestamp, consensusState.diversifier, counterpartyClientIdentifier, consensusHeight, consensusStateBytes, prefix)
+            makeConsensusStateSignBytes(height, MultiSignature.decode(proof).timestamp, consensusState.diversifier, counterpartyClientIdentifier, consensusHeight, consensusStateBytes, prefix)
         );
     }
 
@@ -151,7 +151,7 @@ contract MultisigClient is IClient {
         return verifySignature(
             consensusState,
             MultiSignature.decode(proof),
-            makeConnectionStateSignBytes(height, consensusState.timestamp, consensusState.diversifier, connectionId, connectionBytes, prefix)
+            makeConnectionStateSignBytes(height, MultiSignature.decode(proof).timestamp, consensusState.diversifier, connectionId, connectionBytes, prefix)
         );
     }
 
@@ -169,7 +169,7 @@ contract MultisigClient is IClient {
         bool found;
         (consensusState, found) = getConsensusState(host, clientId, getConsensusHeight(height));
         require(found, "consensus state not found");
-        bytes memory signBytes = makeChannelStateSignBytes(height, consensusState.timestamp, consensusState.diversifier, portId, channelId, channelBytes, prefix);
+        bytes memory signBytes = makeChannelStateSignBytes(height, MultiSignature.decode(proof).timestamp, consensusState.diversifier, portId, channelId, channelBytes, prefix);
         return verifySignature(
             consensusState,
             MultiSignature.decode(proof),
@@ -194,7 +194,7 @@ contract MultisigClient is IClient {
             (consensusState, found) = getConsensusState(host, clientId, getConsensusHeight(height));
             require(found, "consensus state not found");
         }
-        bytes memory signBytes = makePacketSignBytes(height, consensusState.timestamp, consensusState.diversifier, IBCIdentifier.packetCommitmentSlot(portId, channelId, sequence), commitmentBytes, prefix);
+        bytes memory signBytes = makePacketSignBytes(height, MultiSignature.decode(proof).timestamp, consensusState.diversifier, IBCIdentifier.packetCommitmentSlot(portId, channelId, sequence), commitmentBytes, prefix);
         return verifySignature(
             consensusState,
             MultiSignature.decode(proof),
@@ -219,7 +219,7 @@ contract MultisigClient is IClient {
             (consensusState, found) = getConsensusState(host, clientId, getConsensusHeight(height));
             require(found, "consensus state not found");
         }
-        bytes memory signBytes = makePacketAcknowledgementSignBytes(height, consensusState.timestamp, consensusState.diversifier, IBCIdentifier.packetAcknowledgementCommitmentSlot(portId, channelId, sequence), acknowledgement, prefix);
+        bytes memory signBytes = makePacketAcknowledgementSignBytes(height, MultiSignature.decode(proof).timestamp, consensusState.diversifier, IBCIdentifier.packetAcknowledgementCommitmentSlot(portId, channelId, sequence), acknowledgement, prefix);
         return verifySignature(
             consensusState,
             MultiSignature.decode(proof),

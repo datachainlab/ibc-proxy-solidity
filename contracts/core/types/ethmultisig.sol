@@ -1559,6 +1559,7 @@ library MultiSignature {
   //struct definition
   struct Data {
     bytes[] signatures;
+    uint64 timestamp;
   }
 
   // Decoder section
@@ -1607,8 +1608,11 @@ library MultiSignature {
     while (pointer < offset + sz) {
       (fieldId, wireType, bytesRead) = ProtoBufRuntime._decode_key(pointer, bs);
       pointer += bytesRead;
-      if (fieldId == 2) {
+      if (fieldId == 1) {
         pointer += _read_signatures(pointer, bs, nil(), counters);
+      }
+      else if (fieldId == 2) {
+        pointer += _read_timestamp(pointer, bs, r, counters);
       }
       
       else {
@@ -1636,13 +1640,16 @@ library MultiSignature {
 
     }
     pointer = offset;
-    r.signatures = new bytes[](counters[2]);
+    r.signatures = new bytes[](counters[1]);
 
     while (pointer < offset + sz) {
       (fieldId, wireType, bytesRead) = ProtoBufRuntime._decode_key(pointer, bs);
       pointer += bytesRead;
-      if (fieldId == 2) {
+      if (fieldId == 1) {
         pointer += _read_signatures(pointer, bs, r, counters);
+      }
+      else if (fieldId == 2) {
+        pointer += _read_timestamp(pointer, bs, nil(), counters);
       }
       else {
         if (wireType == ProtoBufRuntime.WireType.Fixed64) {
@@ -1691,9 +1698,36 @@ library MultiSignature {
      */
     (bytes memory x, uint256 sz) = ProtoBufRuntime._decode_bytes(p, bs);
     if (isNil(r)) {
+      counters[1] += 1;
+    } else {
+      r.signatures[r.signatures.length - counters[1]] = x;
+      if (counters[1] > 0) counters[1] -= 1;
+    }
+    return sz;
+  }
+
+  /**
+   * @dev The decoder for reading a field
+   * @param p The offset of bytes array to start decode
+   * @param bs The bytes array to be decoded
+   * @param r The in-memory struct
+   * @param counters The counters for repeated fields
+   * @return The number of bytes decoded
+   */
+  function _read_timestamp(
+    uint256 p,
+    bytes memory bs,
+    Data memory r,
+    uint[3] memory counters
+  ) internal pure returns (uint) {
+    /**
+     * if `r` is NULL, then only counting the number of fields.
+     */
+    (uint64 x, uint256 sz) = ProtoBufRuntime._decode_uint64(p, bs);
+    if (isNil(r)) {
       counters[2] += 1;
     } else {
-      r.signatures[r.signatures.length - counters[2]] = x;
+      r.timestamp = x;
       if (counters[2] > 0) counters[2] -= 1;
     }
     return sz;
@@ -1735,13 +1769,22 @@ library MultiSignature {
     if (r.signatures.length != 0) {
     for(i = 0; i < r.signatures.length; i++) {
       pointer += ProtoBufRuntime._encode_key(
-        2,
+        1,
         ProtoBufRuntime.WireType.LengthDelim,
         pointer,
         bs)
       ;
       pointer += ProtoBufRuntime._encode_bytes(r.signatures[i], pointer, bs);
     }
+    }
+    if (r.timestamp != 0) {
+    pointer += ProtoBufRuntime._encode_key(
+      2,
+      ProtoBufRuntime.WireType.Varint,
+      pointer,
+      bs
+    );
+    pointer += ProtoBufRuntime._encode_uint64(r.timestamp, pointer, bs);
     }
     return pointer - offset;
   }
@@ -1789,6 +1832,7 @@ library MultiSignature {
     for(i = 0; i < r.signatures.length; i++) {
       e += 1 + ProtoBufRuntime._sz_lendelim(r.signatures[i].length);
     }
+    e += 1 + ProtoBufRuntime._sz_uint64(r.timestamp);
     return e;
   }
   // empty checker
@@ -1798,6 +1842,10 @@ library MultiSignature {
   ) internal pure returns (bool) {
     
   if (r.signatures.length != 0) {
+    return false;
+  }
+
+  if (r.timestamp != 0) {
     return false;
   }
 
@@ -1813,6 +1861,7 @@ library MultiSignature {
    */
   function store(Data memory input, Data storage output) internal {
     output.signatures = input.signatures;
+    output.timestamp = input.timestamp;
 
   }
 

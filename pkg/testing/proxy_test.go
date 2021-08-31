@@ -17,6 +17,7 @@ import (
 
 	ethmultisigtypes "github.com/datachainlab/ibc-proxy-solidity/modules/light-clients/xx-ethmultisig/types"
 	proxytypes "github.com/datachainlab/ibc-proxy-solidity/modules/light-clients/xx-proxy/types"
+	ethmultisig "github.com/datachainlab/ibc-proxy-solidity/modules/relay/ethmultisig"
 	"github.com/datachainlab/ibc-proxy-solidity/pkg/consts"
 	"github.com/datachainlab/ibc-proxy-solidity/pkg/contract/multisigclient"
 	gethcrypto "github.com/ethereum/go-ethereum/crypto"
@@ -48,17 +49,16 @@ func (suite *ProxyTestSuite) TestMultisig() {
 		counterpartyClientID = "testcounterparty-0"
 	)
 	prefix := []byte("ibc")
-	ts := uint64(time.Now().Unix())
 
 	prover := NewProver(suite.cdc, diversifier, []*ecdsa.PrivateKey{suite.chain.prvKey(0)}, prefix)
 	targetClientState := makeMultisigClientState(1)
-	signBytes, proofClient, err := prover.ProveClientState(counterpartyClientID, 1, ts, targetClientState)
+	signBytes, proofClient, err := prover.ProveClientState(counterpartyClientID, 1, targetClientState)
 	suite.Require().NoError(err)
 
 	consensusState := makeMultisigConsensusState(
 		[]common.Address{suite.chain.CallOpts(ctx, 0).From},
 		diversifier,
-		ts,
+		uint64(time.Now().UnixNano()),
 	)
 
 	// VerifySignature
@@ -103,15 +103,14 @@ func makeProxyCommitmentPrefix(proxyKeyPrefix []byte, upstreamClientID string, c
 func (suite *ProxyTestSuite) TestProxy() {
 	ctx := context.TODO()
 
-	const diversifier = "tester"
 	const (
+		diversifier                 = "tester"
 		clientID                    = "testclient-0"
 		counterpartyClientID        = "testcounterparty-0"
 		upstreamClientID            = "testupstream-0"
 		proofHeight          uint64 = 1
 	)
 	prefix := []byte("ibc")
-	ts := uint64(time.Now().Unix())
 
 	prover := NewProver(suite.cdc, diversifier, []*ecdsa.PrivateKey{suite.chain.prvKey(0)}, makeProxyCommitmentPrefix(prefix, upstreamClientID, prefix))
 
@@ -119,7 +118,7 @@ func (suite *ProxyTestSuite) TestProxy() {
 	proxyConsensus := makeProxyMultisigConsensusState(makeMultisigConsensusState(
 		[]common.Address{suite.chain.CallOpts(ctx, 0).From},
 		diversifier,
-		ts,
+		uint64(time.Now().UnixNano()),
 	))
 	anyProxyClientBytes, err := suite.cdc.MarshalInterface(proxyClient)
 	suite.Require().NoError(err)
@@ -135,7 +134,7 @@ func (suite *ProxyTestSuite) TestProxy() {
 		))
 
 	targetClientState := makeMultisigClientState(1)
-	_, proofClient, err := prover.ProveClientState(counterpartyClientID, proofHeight, ts, targetClientState)
+	_, proofClient, err := prover.ProveClientState(counterpartyClientID, proofHeight, targetClientState)
 	suite.Require().NoError(err)
 	anyClientStateBytes, err := suite.cdc.MarshalInterface(targetClientState)
 	suite.Require().NoError(err)
@@ -158,12 +157,11 @@ func (suite *ProxyTestSuite) TestSerialization() {
 		counterpartyClientID = "testcounterparty-0"
 	)
 	prefix := []byte("ibc")
-	ts := uint64(time.Now().Unix())
 	prover := NewProver(suite.cdc, diversifier, []*ecdsa.PrivateKey{suite.chain.prvKey(0)}, prefix)
 
 	ctx := context.TODO()
 	clientState := makeMultisigClientState(1)
-	signBytes, _, err := prover.ProveClientState(counterpartyClientID, 1, ts, clientState)
+	signBytes, sig, err := prover.ProveClientState(counterpartyClientID, 1, clientState)
 	suite.Require().NoError(err)
 
 	anyClientStateBytes, err := suite.cdc.MarshalInterface(clientState)
@@ -171,7 +169,7 @@ func (suite *ProxyTestSuite) TestSerialization() {
 	expectedBytes, err := suite.chain.multisigClient.MakeClientStateSignBytes(
 		suite.chain.CallOpts(ctx, 0),
 		1,
-		ts,
+		sig.Timestamp,
 		diversifier,
 		counterpartyClientID,
 		anyClientStateBytes,
@@ -246,12 +244,16 @@ func NewProver(cdc codec.ProtoCodecMarshaler, diversifier string, keys []*ecdsa.
 	return ETHMultisigProver{cdc: cdc, diversifier: diversifier, keys: keys, prefix: prefix}
 }
 
-func (p ETHMultisigProver) ProveClientState(clientID string, height uint64, timestamp uint64, clientState exported.ClientState) ([]byte, *ethmultisigtypes.MultiSignature, error) {
+func (ETHMultisigProver) GetTimestamp() uint64 {
+	return uint64(time.Now().UnixNano())
+}
+
+func (p ETHMultisigProver) ProveClientState(clientID string, height uint64, clientState exported.ClientState) ([]byte, *ethmultisigtypes.MultiSignature, error) {
 	bz, err := p.cdc.MarshalInterface(clientState)
 	if err != nil {
 		return nil, nil, err
 	}
-	path, err := ClientCommitmentKey(p.prefix, clientID)
+	path, err := ethmultisig.ClientCommitmentKey(p.prefix, clientID)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -262,6 +264,7 @@ func (p ETHMultisigProver) ProveClientState(clientID string, height uint64, time
 	if err != nil {
 		return nil, nil, err
 	}
+	timestamp := p.GetTimestamp()
 	signBytes, err := p.cdc.Marshal(&ethmultisigtypes.SignBytes{
 		Height:      ethmultisigtypes.Height{RevisionNumber: 0, RevisionHeight: height},
 		Timestamp:   timestamp,
@@ -274,7 +277,7 @@ func (p ETHMultisigProver) ProveClientState(clientID string, height uint64, time
 	}
 	signHash := gethcrypto.Keccak256(signBytes)
 
-	var proof ethmultisigtypes.MultiSignature
+	proof := ethmultisigtypes.MultiSignature{Timestamp: timestamp}
 	for _, key := range p.keys {
 		sig, err := gethcrypto.Sign(signHash, key)
 		if err != nil {
