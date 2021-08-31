@@ -104,8 +104,10 @@ func (pr *Prover) QueryClientStateWithProof(height int64) (*clienttypes.QueryCli
 	if err != nil {
 		return nil, err
 	}
-	// XXX
-	proofHeight := clienttypes.NewHeight(0, 1)
+	proofHeight, err := pr.GetHeight()
+	if err != nil {
+		return nil, err
+	}
 	proof, err := pr.multisig.SignClientState(pr.chain.Path().ClientID, proofHeight, clientState)
 	if err != nil {
 		return nil, err
@@ -137,4 +139,17 @@ func (pr *Prover) QueryPacketCommitmentWithProof(height int64, seq uint64) (comR
 // QueryPacketAcknowledgementCommitmentWithProof returns the packet acknowledgement commitment and its proof
 func (pr *Prover) QueryPacketAcknowledgementCommitmentWithProof(height int64, seq uint64) (ackRes *chantypes.QueryPacketAcknowledgementResponse, err error) {
 	panic("not implemented") // TODO: Implement
+}
+
+func (pr *Prover) GetHeight() (clienttypes.Height, error) {
+	seq, err := pr.GetSequeunce()
+	if err != nil {
+		return clienttypes.Height{}, err
+	}
+	return clienttypes.NewHeight(0, seq), nil
+}
+
+// TODO load a sequence value from the persisted storage
+func (pr *Prover) GetSequeunce() (uint64, error) {
+	return 1, nil
 }
