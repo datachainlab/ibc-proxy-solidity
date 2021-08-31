@@ -3,6 +3,7 @@ package ethmultisig
 import (
 	"crypto/ecdsa"
 	"fmt"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	clienttypes "github.com/cosmos/ibc-go/modules/core/02-client/types"
@@ -11,7 +12,7 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/modules/core/exported"
 	ethmultisigclient "github.com/datachainlab/ibc-proxy-solidity/modules/light-clients/xx-ethmultisig/types"
 	"github.com/datachainlab/ibc-proxy-solidity/modules/relay/ethmultisig/wallet"
-	"github.com/ethereum/go-ethereum/crypto"
+	proto "github.com/gogo/protobuf/proto"
 	"github.com/hyperledger-labs/yui-relayer/core"
 )
 
@@ -21,23 +22,23 @@ func (pr ProverConfig) Build(chain core.ChainI) (core.ProverI, error) {
 	if len(pr.Wallets) == 0 {
 		return nil, fmt.Errorf("at least one wallet is needed")
 	}
-	var prover Prover
-	prover.diversifier = pr.Diversifier
+	var keys []*ecdsa.PrivateKey
 	for _, w := range pr.Wallets {
 		prv, err := wallet.GetPrvKeyFromMnemonicAndHDWPath(w.HdwPath, w.Mnemonic)
 		if err != nil {
 			return nil, err
 		}
-		prover.keys = append(prover.keys, prv)
+		keys = append(keys, prv)
 	}
-	return &prover, nil
+	multisig := NewETHMultisig(chain.Codec(), pr.Diversifier, keys, pr.Prefix)
+	return &Prover{chain: chain, diversifier: pr.Diversifier, multisig: multisig}, nil
 }
 
 type Prover struct {
 	chain core.ChainI
 
 	diversifier string
-	keys        []*ecdsa.PrivateKey
+	multisig    ETHMultisig
 }
 
 var _ core.ProverI = (*Prover)(nil)
@@ -60,8 +61,7 @@ func (pr *Prover) GetLatestLightHeight() (int64, error) {
 // CreateMsgCreateClient creates a CreateClientMsg to this chain
 func (pr *Prover) CreateMsgCreateClient(clientID string, dstHeader core.HeaderI, signer sdk.AccAddress) (*clienttypes.MsgCreateClient, error) {
 	var addresses [][]byte
-	for _, key := range pr.keys {
-		addr := crypto.PubkeyToAddress(key.PublicKey)
+	for _, addr := range pr.multisig.Addresses() {
 		addresses = append(addresses, addr.Bytes())
 	}
 	clientState := &ethmultisigclient.ClientState{
@@ -70,7 +70,7 @@ func (pr *Prover) CreateMsgCreateClient(clientID string, dstHeader core.HeaderI,
 	consensusState := &ethmultisigclient.ConsensusState{
 		Addresses:   addresses,
 		Diversifier: pr.diversifier,
-		Timestamp:   0,
+		Timestamp:   uint64(time.Now().UnixNano()),
 	}
 	return clienttypes.NewMsgCreateClient(clientState, consensusState, signer.String())
 }
@@ -96,7 +96,27 @@ func (pr *Prover) QueryClientConsensusStateWithProof(height int64, dstClientCons
 
 // QueryClientStateWithProof returns the ClientState and its proof
 func (pr *Prover) QueryClientStateWithProof(height int64) (*clienttypes.QueryClientStateResponse, error) {
-	panic("not implemented") // TODO: Implement
+	res, err := pr.chain.QueryClientState(height)
+	if err != nil {
+		return nil, err
+	}
+	clientState, err := clienttypes.UnpackClientState(res.ClientState)
+	if err != nil {
+		return nil, err
+	}
+	// XXX
+	proofHeight := clienttypes.NewHeight(0, 1)
+	proof, err := pr.multisig.SignClientState(pr.chain.Path().ClientID, proofHeight, clientState)
+	if err != nil {
+		return nil, err
+	}
+	proofBytes, err := proto.Marshal(proof)
+	if err != nil {
+		return nil, err
+	}
+	res.Proof = proofBytes
+	res.ProofHeight = proofHeight
+	return res, nil
 }
 
 // QueryConnectionWithProof returns the Connection and its proof
