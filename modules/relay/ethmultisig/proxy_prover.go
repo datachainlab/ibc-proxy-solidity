@@ -17,25 +17,49 @@ type ProxyChainProver struct {
 var _ proxy.ProxyChainProverI = (*ProxyChainProver)(nil)
 
 func (pr *ProxyChainProver) QueryProxyClientStateWithProof(height int64) (*clienttypes.QueryClientStateResponse, error) {
-	panic("not implemented") // TODO: Implement
+	res, err := pr.proxyChain.QueryProxyClientState(height)
+	if err != nil {
+		return nil, err
+	}
+	return pr.SignClientStateResponse(res)
 }
 
 func (pr *ProxyChainProver) QueryProxyClientConsensusStateWithProof(height int64, dstClientConsHeight ibcexported.Height) (*clienttypes.QueryConsensusStateResponse, error) {
-	panic("not implemented") // TODO: Implement
+	res, err := pr.QueryClientConsensusStateWithProof(height, dstClientConsHeight)
+	if err != nil {
+		return nil, err
+	}
+	return pr.SignConsensusStateResponse(res, dstClientConsHeight)
 }
 
 func (pr *ProxyChainProver) QueryProxyConnectionStateWithProof(height int64) (*conntypes.QueryConnectionResponse, error) {
-	panic("not implemented") // TODO: Implement
+	res, err := pr.QueryConnectionWithProof(height)
+	if err != nil {
+		return nil, err
+	}
+	return pr.SignConnectionStateResponse(res)
 }
 
 func (pr *ProxyChainProver) QueryProxyChannelWithProof(height int64) (chanRes *chantypes.QueryChannelResponse, err error) {
-	panic("not implemented") // TODO: Implement
+	res, err := pr.QueryChannelWithProof(height)
+	if err != nil {
+		return nil, err
+	}
+	return pr.SignChannelStateResponse(res)
 }
 
 func (pr *ProxyChainProver) QueryProxyPacketCommitmentWithProof(height int64, seq uint64) (comRes *chantypes.QueryPacketCommitmentResponse, err error) {
-	panic("not implemented") // TODO: Implement
+	res, err := pr.QueryPacketCommitmentWithProof(height, seq)
+	if err != nil {
+		return nil, err
+	}
+	return pr.SignPacketStateResponse(res, seq)
 }
 
 func (pr *ProxyChainProver) QueryProxyPacketAcknowledgementCommitmentWithProof(height int64, seq uint64) (ackRes *chantypes.QueryPacketAcknowledgementResponse, err error) {
-	panic("not implemented") // TODO: Implement
+	res, err := pr.QueryPacketAcknowledgementCommitmentWithProof(height, seq)
+	if err != nil {
+		return nil, err
+	}
+	return pr.SignAcknowledgementStateResponse(res, seq)
 }

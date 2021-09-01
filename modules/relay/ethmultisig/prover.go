@@ -95,19 +95,7 @@ func (pr *Prover) QueryClientConsensusStateWithProof(height int64, dstClientCons
 	if err != nil {
 		return nil, err
 	}
-	consensusState, err := clienttypes.UnpackConsensusState(res.ConsensusState)
-	if err != nil {
-		return nil, err
-	}
-	res.ProofHeight, err = pr.GetHeight()
-	if err != nil {
-		return nil, err
-	}
-	res.Proof, err = marshalProofIfNoError(pr.multisig.SignConsensusState(res.ProofHeight, pr.chain.Path().ClientID, dstClientConsHeight, consensusState))
-	if err != nil {
-		return nil, err
-	}
-	return res, nil
+	return pr.SignConsensusStateResponse(res, dstClientConsHeight)
 }
 
 // QueryClientStateWithProof returns the ClientState and its proof
@@ -116,6 +104,59 @@ func (pr *Prover) QueryClientStateWithProof(height int64) (*clienttypes.QueryCli
 	if err != nil {
 		return nil, err
 	}
+	return pr.SignClientStateResponse(res)
+}
+
+// QueryConnectionWithProof returns the Connection and its proof
+func (pr *Prover) QueryConnectionWithProof(height int64) (*conntypes.QueryConnectionResponse, error) {
+	res, err := pr.chain.QueryConnection(height)
+	if err != nil {
+		return nil, err
+	}
+	return pr.SignConnectionStateResponse(res)
+}
+
+// QueryChannelWithProof returns the Channel and its proof
+func (pr *Prover) QueryChannelWithProof(height int64) (*chantypes.QueryChannelResponse, error) {
+	res, err := pr.chain.QueryChannel(height)
+	if err != nil {
+		return nil, err
+	}
+	return pr.SignChannelStateResponse(res)
+}
+
+// QueryPacketCommitmentWithProof returns the packet commitment and its proof
+func (pr *Prover) QueryPacketCommitmentWithProof(height int64, seq uint64) (comRes *chantypes.QueryPacketCommitmentResponse, err error) {
+	res, err := pr.chain.QueryPacketCommitment(height, seq)
+	if err != nil {
+		return nil, err
+	}
+	return pr.SignPacketStateResponse(res, seq)
+}
+
+// QueryPacketAcknowledgementCommitmentWithProof returns the packet acknowledgement commitment and its proof
+func (pr *Prover) QueryPacketAcknowledgementCommitmentWithProof(height int64, seq uint64) (*chantypes.QueryPacketAcknowledgementResponse, error) {
+	res, err := pr.chain.QueryPacketAcknowledgementCommitment(height, seq)
+	if err != nil {
+		return nil, err
+	}
+	return pr.SignAcknowledgementStateResponse(res, seq)
+}
+
+func (pr *Prover) GetHeight() (clienttypes.Height, error) {
+	seq, err := pr.GetSequeunce()
+	if err != nil {
+		return clienttypes.Height{}, err
+	}
+	return clienttypes.NewHeight(0, seq), nil
+}
+
+// TODO load a sequence value from the persisted storage
+func (pr *Prover) GetSequeunce() (uint64, error) {
+	return 1, nil
+}
+
+func (pr *Prover) SignClientStateResponse(res *clienttypes.QueryClientStateResponse) (*clienttypes.QueryClientStateResponse, error) {
 	clientState, err := clienttypes.UnpackClientState(res.ClientState)
 	if err != nil {
 		return nil, err
@@ -131,12 +172,24 @@ func (pr *Prover) QueryClientStateWithProof(height int64) (*clienttypes.QueryCli
 	return res, nil
 }
 
-// QueryConnectionWithProof returns the Connection and its proof
-func (pr *Prover) QueryConnectionWithProof(height int64) (*conntypes.QueryConnectionResponse, error) {
-	res, err := pr.chain.QueryConnection(height)
+func (pr *Prover) SignConsensusStateResponse(res *clienttypes.QueryConsensusStateResponse, dstClientConsHeight ibcexported.Height) (*clienttypes.QueryConsensusStateResponse, error) {
+	consensusState, err := clienttypes.UnpackConsensusState(res.ConsensusState)
 	if err != nil {
 		return nil, err
 	}
+	res.ProofHeight, err = pr.GetHeight()
+	if err != nil {
+		return nil, err
+	}
+	res.Proof, err = marshalProofIfNoError(pr.multisig.SignConsensusState(res.ProofHeight, pr.chain.Path().ClientID, dstClientConsHeight, consensusState))
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (pr *Prover) SignConnectionStateResponse(res *conntypes.QueryConnectionResponse) (*conntypes.QueryConnectionResponse, error) {
+	var err error
 	res.ProofHeight, err = pr.GetHeight()
 	if err != nil {
 		return nil, err
@@ -148,12 +201,8 @@ func (pr *Prover) QueryConnectionWithProof(height int64) (*conntypes.QueryConnec
 	return res, nil
 }
 
-// QueryChannelWithProof returns the Channel and its proof
-func (pr *Prover) QueryChannelWithProof(height int64) (chanRes *chantypes.QueryChannelResponse, err error) {
-	res, err := pr.chain.QueryChannel(height)
-	if err != nil {
-		return nil, err
-	}
+func (pr *Prover) SignChannelStateResponse(res *chantypes.QueryChannelResponse) (*chantypes.QueryChannelResponse, error) {
+	var err error
 	res.ProofHeight, err = pr.GetHeight()
 	if err != nil {
 		return nil, err
@@ -165,12 +214,8 @@ func (pr *Prover) QueryChannelWithProof(height int64) (chanRes *chantypes.QueryC
 	return res, nil
 }
 
-// QueryPacketCommitmentWithProof returns the packet commitment and its proof
-func (pr *Prover) QueryPacketCommitmentWithProof(height int64, seq uint64) (comRes *chantypes.QueryPacketCommitmentResponse, err error) {
-	res, err := pr.chain.QueryPacketCommitment(height, seq)
-	if err != nil {
-		return nil, err
-	}
+func (pr *Prover) SignPacketStateResponse(res *chantypes.QueryPacketCommitmentResponse, seq uint64) (*chantypes.QueryPacketCommitmentResponse, error) {
+	var err error
 	res.ProofHeight, err = pr.GetHeight()
 	if err != nil {
 		return nil, err
@@ -182,12 +227,8 @@ func (pr *Prover) QueryPacketCommitmentWithProof(height int64, seq uint64) (comR
 	return res, nil
 }
 
-// QueryPacketAcknowledgementCommitmentWithProof returns the packet acknowledgement commitment and its proof
-func (pr *Prover) QueryPacketAcknowledgementCommitmentWithProof(height int64, seq uint64) (ackRes *chantypes.QueryPacketAcknowledgementResponse, err error) {
-	res, err := pr.chain.QueryPacketAcknowledgementCommitment(height, seq)
-	if err != nil {
-		return nil, err
-	}
+func (pr *Prover) SignAcknowledgementStateResponse(res *chantypes.QueryPacketAcknowledgementResponse, seq uint64) (*chantypes.QueryPacketAcknowledgementResponse, error) {
+	var err error
 	res.ProofHeight, err = pr.GetHeight()
 	if err != nil {
 		return nil, err
@@ -197,19 +238,6 @@ func (pr *Prover) QueryPacketAcknowledgementCommitmentWithProof(height int64, se
 		return nil, err
 	}
 	return res, nil
-}
-
-func (pr *Prover) GetHeight() (clienttypes.Height, error) {
-	seq, err := pr.GetSequeunce()
-	if err != nil {
-		return clienttypes.Height{}, err
-	}
-	return clienttypes.NewHeight(0, seq), nil
-}
-
-// TODO load a sequence value from the persisted storage
-func (pr *Prover) GetSequeunce() (uint64, error) {
-	return 1, nil
 }
 
 func marshalProofIfNoError(proof *ethmultisigclient.MultiSignature, err error) ([]byte, error) {
