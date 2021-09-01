@@ -3,6 +3,7 @@ package testing
 import (
 	"context"
 	"crypto/ecdsa"
+	"fmt"
 	"testing"
 	"time"
 
@@ -97,7 +98,7 @@ func (suite *ProxyTestSuite) TestMultisig() {
 }
 
 func makeProxyCommitmentPrefix(proxyKeyPrefix []byte, upstreamClientID string, counterpartyPrefix []byte) []byte {
-	return append(append(proxyKeyPrefix, []byte(upstreamClientID)...), counterpartyPrefix...)
+	return []byte(fmt.Sprintf("%s/%s/%s", proxyKeyPrefix, upstreamClientID, counterpartyPrefix))
 }
 
 func (suite *ProxyTestSuite) TestProxy() {

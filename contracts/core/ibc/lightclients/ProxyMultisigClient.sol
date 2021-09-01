@@ -246,7 +246,7 @@ contract ProxyMultisigClient is MultisigClient {
       );
     }
 
-    function makeProxyCommitmentPrefix(bytes memory proxyKeyPrefix, string memory upstreamClientId, bytes memory counterpartyPrefix) public pure returns (bytes memory) {
-      return abi.encodePacked(proxyKeyPrefix, upstreamClientId, counterpartyPrefix);
+    function makeProxyCommitmentPrefix(bytes memory proxyKeyPrefix, string memory upstreamClientId, bytes memory upstreamPrefix) public pure returns (bytes memory) {
+      return abi.encodePacked(proxyKeyPrefix, "/", upstreamClientId, "/", upstreamPrefix);
     }
 }
