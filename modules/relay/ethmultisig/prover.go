@@ -43,7 +43,7 @@ func NewProver(pr ProverConfig, chain core.ChainI) (*Prover, error) {
 		}
 		keys = append(keys, prv)
 	}
-	multisig := NewETHMultisig(chain.Codec(), pr.Diversifier, keys, pr.Prefix)
+	multisig := NewETHMultisig(chain.Codec(), pr.Diversifier, keys, []byte(pr.Prefix))
 	return &Prover{chain: chain, diversifier: pr.Diversifier, multisig: multisig}, nil
 }
 

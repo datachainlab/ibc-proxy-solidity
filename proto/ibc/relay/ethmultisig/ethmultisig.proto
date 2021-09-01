@@ -8,7 +8,7 @@ import "google/protobuf/any.proto";
 message ProverConfig {
   string diversifier = 1;
   repeated HDWallet wallets = 2;
-  bytes prefix = 3;
+  string prefix = 3;
 }
 
 message HDWallet {
