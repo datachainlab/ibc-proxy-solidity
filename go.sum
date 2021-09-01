@@ -178,6 +178,7 @@ github.com/cosmos/iavl v0.15.0-rc5/go.mod h1:WqoPL9yPTQ85QBMT45OOUzPxG/U/JcJoN7u
 github.com/cosmos/iavl v0.15.3/go.mod h1:OLjQiAQ4fGD2KDZooyJG9yz+p2ao2IAYSbke8mVvSA4=
 github.com/cosmos/iavl v0.16.0 h1:ICIOB8xysirTX27GmVAaoeSpeozzgSu9d49w36xkVJA=
 github.com/cosmos/iavl v0.16.0/go.mod h1:2A8O/Jz9YwtjqXMO0CjnnbTYEEaovE8jWcwrakH3PoE=
+github.com/cosmos/ibc-go v1.0.0-alpha2.0.20210512161830-f4123347754d/go.mod h1:NU4IARjXt3Hj5xcju207SWjDMpqMx3CHUXejGe0EXfY=
 github.com/cosmos/ibc-go v1.0.0-beta1 h1:SU0MsWCwq20D3A5K8JsoHActmeSxr0aDD5iM6HmmKWw=
 github.com/cosmos/ibc-go v1.0.0-beta1/go.mod h1:NU4IARjXt3Hj5xcju207SWjDMpqMx3CHUXejGe0EXfY=
 github.com/cosmos/ledger-cosmos-go v0.11.1 h1:9JIYsGnXP613pb2vPjFeMMjBI5lEDsEaF6oYorTy6J4=
@@ -191,6 +192,10 @@ github.com/creack/pty v1.1.7/go.mod h1:lj5s0c3V2DBrqTV7llrYr5NG6My20zk30Fl46Y7Do
 github.com/danieljoos/wincred v1.0.2 h1:zf4bhty2iLuwgjgpraD2E9UbvO+fe54XXGJbOwe23fU=
 github.com/danieljoos/wincred v1.0.2/go.mod h1:SnuYRW9lp1oJrZX/dXJqr0cPK5gYXqx3EJbmjhLdK9U=
 github.com/datachainlab/ibc-mock-client v0.0.0-20210801010718-05f8b1087574/go.mod h1:yz5E2DpB3FJZZjagC4HcW51km5HesF1tFQRr6k0HQvA=
+github.com/datachainlab/ibc-proxy v0.0.0-20210819061801-ebe2656b6d6e h1:rg5nXL4UFFdVUGbYlQWTPmZejpMWBrkK8cwVRyzGoNY=
+github.com/datachainlab/ibc-proxy v0.0.0-20210819061801-ebe2656b6d6e/go.mod h1:Eqx5w/EOmfpBjZluuaD+P8tDxHCKSyU725giZfvMjpY=
+github.com/datachainlab/ibc-proxy-prover v0.0.0-20210819114049-854b4a40bbc9 h1:gFVbvZzGMdQVgB+xBMsLXInZ/tOHOWhvMM3Tx48ivMQ=
+github.com/datachainlab/ibc-proxy-prover v0.0.0-20210819114049-854b4a40bbc9/go.mod h1:r1pfJ7uDxU8Ety5kEu7GqHF1JGlGByS8l41esCXqzb0=
 github.com/davecgh/go-spew v0.0.0-20171005155431-ecdeabc65495/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
