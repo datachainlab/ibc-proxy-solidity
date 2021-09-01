@@ -15,3 +15,7 @@ message HDWallet {
   string mnemonic = 1;
   string hdw_path = 2;
 }
+
+message ProxyChainProverConfig {
+  ProverConfig prover_config = 1;
+}

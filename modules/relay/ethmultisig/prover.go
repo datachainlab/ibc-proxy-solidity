@@ -19,6 +19,19 @@ import (
 var _ core.ProverConfigI = (*ProverConfig)(nil)
 
 func (pr ProverConfig) Build(chain core.ChainI) (core.ProverI, error) {
+	return NewProver(pr, chain)
+}
+
+type Prover struct {
+	chain core.ChainI
+
+	diversifier string
+	multisig    ETHMultisig
+}
+
+var _ core.ProverI = (*Prover)(nil)
+
+func NewProver(pr ProverConfig, chain core.ChainI) (*Prover, error) {
 	if len(pr.Wallets) == 0 {
 		return nil, fmt.Errorf("at least one wallet is needed")
 	}
@@ -33,15 +46,6 @@ func (pr ProverConfig) Build(chain core.ChainI) (core.ProverI, error) {
 	multisig := NewETHMultisig(chain.Codec(), pr.Diversifier, keys, pr.Prefix)
 	return &Prover{chain: chain, diversifier: pr.Diversifier, multisig: multisig}, nil
 }
-
-type Prover struct {
-	chain core.ChainI
-
-	diversifier string
-	multisig    ETHMultisig
-}
-
-var _ core.ProverI = (*Prover)(nil)
 
 // GetChainID returns the chain ID
 func (pr *Prover) GetChainID() string {

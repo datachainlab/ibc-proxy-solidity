@@ -6,15 +6,31 @@ import (
 	chantypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
 	ibcexported "github.com/cosmos/ibc-go/modules/core/exported"
 	"github.com/datachainlab/ibc-proxy-prover/pkg/proxy"
-	tendermintproxy "github.com/datachainlab/ibc-proxy-prover/pkg/proxy/tendermint"
 )
 
+var _ proxy.ProxyChainProverConfigI = (*ProxyChainProverConfig)(nil)
+
+func (c *ProxyChainProverConfig) Build(proxyChain proxy.ProxyChainI) (proxy.ProxyChainProverI, error) {
+	return NewProxyChainProver(c, proxyChain)
+}
+
 type ProxyChainProver struct {
-	proxyChain *tendermintproxy.TendermintProxyChain
+	proxyChain proxy.ProxyChainI
 	*Prover
 }
 
 var _ proxy.ProxyChainProverI = (*ProxyChainProver)(nil)
+
+func NewProxyChainProver(cfg *ProxyChainProverConfig, proxyChain proxy.ProxyChainI) (*ProxyChainProver, error) {
+	pr, err := NewProver(*cfg.ProverConfig, proxyChain)
+	if err != nil {
+		return nil, err
+	}
+	return &ProxyChainProver{
+		proxyChain: proxyChain,
+		Prover:     pr,
+	}, nil
+}
 
 func (pr *ProxyChainProver) QueryProxyClientStateWithProof(height int64) (*clienttypes.QueryClientStateResponse, error) {
 	res, err := pr.proxyChain.QueryProxyClientState(height)
