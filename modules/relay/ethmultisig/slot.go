@@ -35,24 +35,44 @@ func ClientCommitmentKey(prefix []byte, clientId string) ([]byte, error) {
 	return append(prefix, key...), nil
 }
 
-func ConsensusCommitmentKey(clientId string, height uint64) ([]byte, error) {
-	return keccak256AbiEncodePacked(consensusStatePrefix, clientId, "/", height)
+func ConsensusCommitmentKey(prefix []byte, clientId string, height uint64) ([]byte, error) {
+	key, err := keccak256AbiEncodePacked(consensusStatePrefix, clientId, "/", height)
+	if err != nil {
+		return nil, err
+	}
+	return append(prefix, key...), nil
 }
 
-func ConnectionCommitmentKey(connectionId string) ([]byte, error) {
-	return keccak256AbiEncodePacked(connectionPrefix, connectionId)
+func ConnectionCommitmentKey(prefix []byte, connectionId string) ([]byte, error) {
+	key, err := keccak256AbiEncodePacked(connectionPrefix, connectionId)
+	if err != nil {
+		return nil, err
+	}
+	return append(prefix, key...), nil
 }
 
-func ChannelCommitmentKey(portId, channelId string) ([]byte, error) {
-	return keccak256AbiEncodePacked(channelPrefix, portId, "/", channelId)
+func ChannelCommitmentKey(prefix []byte, portId, channelId string) ([]byte, error) {
+	key, err := keccak256AbiEncodePacked(channelPrefix, portId, "/", channelId)
+	if err != nil {
+		return nil, err
+	}
+	return append(prefix, key...), nil
 }
 
-func PacketCommitmentKey(portId, channelId string, sequence uint64) ([]byte, error) {
-	return keccak256AbiEncodePacked(packetPrefix, portId, "/", channelId, "/", sequence)
+func PacketCommitmentKey(prefix []byte, portId, channelId string, sequence uint64) ([]byte, error) {
+	key, err := keccak256AbiEncodePacked(packetPrefix, portId, "/", channelId, "/", sequence)
+	if err != nil {
+		return nil, err
+	}
+	return append(prefix, key...), nil
 }
 
-func PacketAcknowledgementCommitmentKey(portId, channelId string, sequence uint64) ([]byte, error) {
-	return keccak256AbiEncodePacked(packetAckPrefix, portId, "/", channelId, "/", sequence)
+func PacketAcknowledgementCommitmentKey(prefix []byte, portId, channelId string, sequence uint64) ([]byte, error) {
+	key, err := keccak256AbiEncodePacked(packetAckPrefix, portId, "/", channelId, "/", sequence)
+	if err != nil {
+		return nil, err
+	}
+	return append(prefix, key...), nil
 }
 
 // keccak256AbiEncodePacked only covers some data types.

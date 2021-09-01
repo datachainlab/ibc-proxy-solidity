@@ -91,7 +91,23 @@ func (pr *Prover) UpdateLightWithHeader() (header core.HeaderI, provableHeight i
 
 // QueryClientConsensusState returns the ClientConsensusState and its proof
 func (pr *Prover) QueryClientConsensusStateWithProof(height int64, dstClientConsHeight ibcexported.Height) (*clienttypes.QueryConsensusStateResponse, error) {
-	panic("not implemented") // TODO: Implement
+	res, err := pr.chain.QueryClientConsensusState(height, dstClientConsHeight)
+	if err != nil {
+		return nil, err
+	}
+	consensusState, err := clienttypes.UnpackConsensusState(res.ConsensusState)
+	if err != nil {
+		return nil, err
+	}
+	res.ProofHeight, err = pr.GetHeight()
+	if err != nil {
+		return nil, err
+	}
+	res.Proof, err = marshalProofIfNoError(pr.multisig.SignConsensusState(res.ProofHeight, pr.chain.Path().ClientID, dstClientConsHeight, consensusState))
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 // QueryClientStateWithProof returns the ClientState and its proof
@@ -104,26 +120,32 @@ func (pr *Prover) QueryClientStateWithProof(height int64) (*clienttypes.QueryCli
 	if err != nil {
 		return nil, err
 	}
-	proofHeight, err := pr.GetHeight()
+	res.ProofHeight, err = pr.GetHeight()
 	if err != nil {
 		return nil, err
 	}
-	proof, err := pr.multisig.SignClientState(pr.chain.Path().ClientID, proofHeight, clientState)
+	res.Proof, err = marshalProofIfNoError(pr.multisig.SignClientState(res.ProofHeight, pr.chain.Path().ClientID, clientState))
 	if err != nil {
 		return nil, err
 	}
-	proofBytes, err := proto.Marshal(proof)
-	if err != nil {
-		return nil, err
-	}
-	res.Proof = proofBytes
-	res.ProofHeight = proofHeight
 	return res, nil
 }
 
 // QueryConnectionWithProof returns the Connection and its proof
 func (pr *Prover) QueryConnectionWithProof(height int64) (*conntypes.QueryConnectionResponse, error) {
-	panic("not implemented") // TODO: Implement
+	res, err := pr.chain.QueryConnection(height)
+	if err != nil {
+		return nil, err
+	}
+	res.ProofHeight, err = pr.GetHeight()
+	if err != nil {
+		return nil, err
+	}
+	res.Proof, err = marshalProofIfNoError(pr.multisig.SignConnectionState(res.ProofHeight, pr.chain.Path().ConnectionID, *res.Connection))
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 // QueryChannelWithProof returns the Channel and its proof
@@ -152,4 +174,11 @@ func (pr *Prover) GetHeight() (clienttypes.Height, error) {
 // TODO load a sequence value from the persisted storage
 func (pr *Prover) GetSequeunce() (uint64, error) {
 	return 1, nil
+}
+
+func marshalProofIfNoError(proof *ethmultisigclient.MultiSignature, err error) ([]byte, error) {
+	if err != nil {
+		return nil, err
+	}
+	return proto.Marshal(proof)
 }
