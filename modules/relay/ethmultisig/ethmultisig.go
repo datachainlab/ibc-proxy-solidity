@@ -126,7 +126,7 @@ func (m ETHMultisig) SignState(height ethmultisigtypes.Height, dtp ethmultisigty
 		Height:      height,
 		Timestamp:   ts,
 		Diversifier: m.diversifier,
-		DataType:    ethmultisigtypes.CLIENT,
+		DataType:    dtp,
 		Data:        data,
 	})
 	if err != nil {
