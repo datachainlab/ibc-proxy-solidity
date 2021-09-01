@@ -17,10 +17,11 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	ethmultisigtypes "github.com/datachainlab/ibc-proxy-solidity/modules/light-clients/xx-ethmultisig/types"
-	proxytypes "github.com/datachainlab/ibc-proxy-solidity/modules/light-clients/xx-proxy/types"
 	ethmultisig "github.com/datachainlab/ibc-proxy-solidity/modules/relay/ethmultisig"
 	"github.com/datachainlab/ibc-proxy-solidity/pkg/consts"
 	"github.com/datachainlab/ibc-proxy-solidity/pkg/contract/multisigclient"
+	proxytypes "github.com/datachainlab/ibc-proxy/modules/light-clients/xx-proxy/types"
+	proxymoduletypes "github.com/datachainlab/ibc-proxy/modules/proxy/types"
 	gethcrypto "github.com/ethereum/go-ethereum/crypto"
 )
 
@@ -37,7 +38,7 @@ func (suite *ProxyTestSuite) SetupTest() {
 	suite.chain = NewChain(suite.T(), "http://127.0.0.1:8545", testMnemonicPhrase, consts.Contract)
 	registry := codectypes.NewInterfaceRegistry()
 	ethmultisigtypes.RegisterInterfaces(registry)
-	proxytypes.RegisterInterfaces(registry)
+	proxymoduletypes.RegisterInterfaces(registry)
 	suite.cdc = codec.NewProtoCodec(registry)
 }
 

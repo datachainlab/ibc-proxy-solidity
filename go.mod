@@ -9,6 +9,7 @@ require (
 	github.com/confio/ics23/go v0.6.6
 	github.com/cosmos/cosmos-sdk v0.43.0-beta1
 	github.com/cosmos/ibc-go v1.0.0-beta1
+	github.com/datachainlab/ibc-proxy v0.0.0-20210819061801-ebe2656b6d6e
 	github.com/datachainlab/ibc-proxy-prover v0.0.0-20210819114049-854b4a40bbc9
 	github.com/ethereum/go-ethereum v1.9.25
 	github.com/gogo/protobuf v1.3.3
