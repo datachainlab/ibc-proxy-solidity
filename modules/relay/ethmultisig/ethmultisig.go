@@ -2,11 +2,13 @@ package ethmultisig
 
 import (
 	"crypto/ecdsa"
+	"fmt"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	clienttypes "github.com/cosmos/ibc-go/modules/core/02-client/types"
 	conntypes "github.com/cosmos/ibc-go/modules/core/03-connection/types"
+	chantypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
 	"github.com/cosmos/ibc-go/modules/core/exported"
 	ibcexported "github.com/cosmos/ibc-go/modules/core/exported"
 	"github.com/ethereum/go-ethereum/common"
@@ -75,6 +77,40 @@ func (m ETHMultisig) SignConnectionState(height clienttypes.Height, connectionID
 		return nil, err
 	}
 	return m.SignState(ethmultisigtypes.Height(height), ethmultisigtypes.CONNECTION, path, bz)
+}
+
+func (m ETHMultisig) SignChannelState(height clienttypes.Height, portID, channelID string, channel chantypes.Channel) (*ethmultisigtypes.MultiSignature, error) {
+	bz, err := m.cdc.Marshal(&channel)
+	if err != nil {
+		return nil, err
+	}
+	path, err := ChannelCommitmentKey(m.prefix, portID, channelID)
+	if err != nil {
+		return nil, err
+	}
+	return m.SignState(ethmultisigtypes.Height(height), ethmultisigtypes.CHANNEL, path, bz)
+}
+
+func (m ETHMultisig) SignPacketState(height clienttypes.Height, portID, channelID string, sequence uint64, packetCommitment []byte) (*ethmultisigtypes.MultiSignature, error) {
+	if len(packetCommitment) != 32 {
+		return nil, fmt.Errorf("packetCommitment length must be 32")
+	}
+	path, err := PacketCommitmentKey(m.prefix, portID, channelID, sequence)
+	if err != nil {
+		return nil, err
+	}
+	return m.SignState(ethmultisigtypes.Height(height), ethmultisigtypes.PACKETCOMMITMENT, path, packetCommitment)
+}
+
+func (m ETHMultisig) SignPacketAcknowledgementState(height clienttypes.Height, portID, channelID string, sequence uint64, acknowledgementCommitment []byte) (*ethmultisigtypes.MultiSignature, error) {
+	if len(acknowledgementCommitment) != 32 {
+		return nil, fmt.Errorf("acknowledgementCommitment length must be 32")
+	}
+	path, err := PacketAcknowledgementCommitmentKey(m.prefix, portID, channelID, sequence)
+	if err != nil {
+		return nil, err
+	}
+	return m.SignState(ethmultisigtypes.Height(height), ethmultisigtypes.PACKETACKNOWLEDGEMENT, path, acknowledgementCommitment)
 }
 
 func (m ETHMultisig) SignState(height ethmultisigtypes.Height, dtp ethmultisigtypes.SignBytes_DataType, path, value []byte) (*ethmultisigtypes.MultiSignature, error) {

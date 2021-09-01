@@ -150,17 +150,53 @@ func (pr *Prover) QueryConnectionWithProof(height int64) (*conntypes.QueryConnec
 
 // QueryChannelWithProof returns the Channel and its proof
 func (pr *Prover) QueryChannelWithProof(height int64) (chanRes *chantypes.QueryChannelResponse, err error) {
-	panic("not implemented") // TODO: Implement
+	res, err := pr.chain.QueryChannel(height)
+	if err != nil {
+		return nil, err
+	}
+	res.ProofHeight, err = pr.GetHeight()
+	if err != nil {
+		return nil, err
+	}
+	res.Proof, err = marshalProofIfNoError(pr.multisig.SignChannelState(res.ProofHeight, pr.chain.Path().PortID, pr.chain.Path().ChannelID, *res.Channel))
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 // QueryPacketCommitmentWithProof returns the packet commitment and its proof
 func (pr *Prover) QueryPacketCommitmentWithProof(height int64, seq uint64) (comRes *chantypes.QueryPacketCommitmentResponse, err error) {
-	panic("not implemented") // TODO: Implement
+	res, err := pr.chain.QueryPacketCommitment(height, seq)
+	if err != nil {
+		return nil, err
+	}
+	res.ProofHeight, err = pr.GetHeight()
+	if err != nil {
+		return nil, err
+	}
+	res.Proof, err = marshalProofIfNoError(pr.multisig.SignPacketState(res.ProofHeight, pr.chain.Path().PortID, pr.chain.Path().ChannelID, seq, res.Commitment))
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 // QueryPacketAcknowledgementCommitmentWithProof returns the packet acknowledgement commitment and its proof
 func (pr *Prover) QueryPacketAcknowledgementCommitmentWithProof(height int64, seq uint64) (ackRes *chantypes.QueryPacketAcknowledgementResponse, err error) {
-	panic("not implemented") // TODO: Implement
+	res, err := pr.chain.QueryPacketAcknowledgementCommitment(height, seq)
+	if err != nil {
+		return nil, err
+	}
+	res.ProofHeight, err = pr.GetHeight()
+	if err != nil {
+		return nil, err
+	}
+	res.Proof, err = marshalProofIfNoError(pr.multisig.SignPacketAcknowledgementState(res.ProofHeight, pr.chain.Path().PortID, pr.chain.Path().ChannelID, seq, res.Acknowledgement))
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 func (pr *Prover) GetHeight() (clienttypes.Height, error) {
