@@ -93,9 +93,15 @@ func (pr *Prover) UpdateLightWithHeader() (header core.HeaderI, provableHeight i
 	return h, 0, 0, nil
 }
 
+/* Query functions: Prover queries the latest state of the chain and signs it */
+
 // QueryClientConsensusState returns the ClientConsensusState and its proof
-func (pr *Prover) QueryClientConsensusStateWithProof(height int64, dstClientConsHeight ibcexported.Height) (*clienttypes.QueryConsensusStateResponse, error) {
-	res, err := pr.chain.QueryClientConsensusState(height, dstClientConsHeight)
+func (pr *Prover) QueryClientConsensusStateWithProof(_ int64, dstClientConsHeight ibcexported.Height) (*clienttypes.QueryConsensusStateResponse, error) {
+	h, err := pr.chain.GetLatestHeight()
+	if err != nil {
+		return nil, err
+	}
+	res, err := pr.chain.QueryClientConsensusState(h, dstClientConsHeight)
 	if err != nil {
 		return nil, err
 	}
@@ -103,8 +109,12 @@ func (pr *Prover) QueryClientConsensusStateWithProof(height int64, dstClientCons
 }
 
 // QueryClientStateWithProof returns the ClientState and its proof
-func (pr *Prover) QueryClientStateWithProof(height int64) (*clienttypes.QueryClientStateResponse, error) {
-	res, err := pr.chain.QueryClientState(height)
+func (pr *Prover) QueryClientStateWithProof(_ int64) (*clienttypes.QueryClientStateResponse, error) {
+	h, err := pr.chain.GetLatestHeight()
+	if err != nil {
+		return nil, err
+	}
+	res, err := pr.chain.QueryClientState(h)
 	if err != nil {
 		return nil, err
 	}
@@ -112,8 +122,12 @@ func (pr *Prover) QueryClientStateWithProof(height int64) (*clienttypes.QueryCli
 }
 
 // QueryConnectionWithProof returns the Connection and its proof
-func (pr *Prover) QueryConnectionWithProof(height int64) (*conntypes.QueryConnectionResponse, error) {
-	res, err := pr.chain.QueryConnection(height)
+func (pr *Prover) QueryConnectionWithProof(_ int64) (*conntypes.QueryConnectionResponse, error) {
+	h, err := pr.chain.GetLatestHeight()
+	if err != nil {
+		return nil, err
+	}
+	res, err := pr.chain.QueryConnection(h)
 	if err != nil {
 		return nil, err
 	}
@@ -121,8 +135,12 @@ func (pr *Prover) QueryConnectionWithProof(height int64) (*conntypes.QueryConnec
 }
 
 // QueryChannelWithProof returns the Channel and its proof
-func (pr *Prover) QueryChannelWithProof(height int64) (*chantypes.QueryChannelResponse, error) {
-	res, err := pr.chain.QueryChannel(height)
+func (pr *Prover) QueryChannelWithProof(_ int64) (*chantypes.QueryChannelResponse, error) {
+	h, err := pr.chain.GetLatestHeight()
+	if err != nil {
+		return nil, err
+	}
+	res, err := pr.chain.QueryChannel(h)
 	if err != nil {
 		return nil, err
 	}
@@ -130,8 +148,12 @@ func (pr *Prover) QueryChannelWithProof(height int64) (*chantypes.QueryChannelRe
 }
 
 // QueryPacketCommitmentWithProof returns the packet commitment and its proof
-func (pr *Prover) QueryPacketCommitmentWithProof(height int64, seq uint64) (comRes *chantypes.QueryPacketCommitmentResponse, err error) {
-	res, err := pr.chain.QueryPacketCommitment(height, seq)
+func (pr *Prover) QueryPacketCommitmentWithProof(_ int64, seq uint64) (comRes *chantypes.QueryPacketCommitmentResponse, err error) {
+	h, err := pr.chain.GetLatestHeight()
+	if err != nil {
+		return nil, err
+	}
+	res, err := pr.chain.QueryPacketCommitment(h, seq)
 	if err != nil {
 		return nil, err
 	}
@@ -139,8 +161,12 @@ func (pr *Prover) QueryPacketCommitmentWithProof(height int64, seq uint64) (comR
 }
 
 // QueryPacketAcknowledgementCommitmentWithProof returns the packet acknowledgement commitment and its proof
-func (pr *Prover) QueryPacketAcknowledgementCommitmentWithProof(height int64, seq uint64) (*chantypes.QueryPacketAcknowledgementResponse, error) {
-	res, err := pr.chain.QueryPacketAcknowledgementCommitment(height, seq)
+func (pr *Prover) QueryPacketAcknowledgementCommitmentWithProof(_ int64, seq uint64) (*chantypes.QueryPacketAcknowledgementResponse, error) {
+	h, err := pr.chain.GetLatestHeight()
+	if err != nil {
+		return nil, err
+	}
+	res, err := pr.chain.QueryPacketAcknowledgementCommitment(h, seq)
 	if err != nil {
 		return nil, err
 	}
