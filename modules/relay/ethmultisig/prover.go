@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	clienttypes "github.com/cosmos/ibc-go/modules/core/02-client/types"
 	conntypes "github.com/cosmos/ibc-go/modules/core/03-connection/types"
@@ -196,6 +197,7 @@ func (pr *Prover) SignClientStateResponse(res *clienttypes.QueryClientStateRespo
 	if err != nil {
 		return nil, err
 	}
+	pr.xxxInit(pr.chain.Codec())
 	res.Proof, err = marshalProofIfNoError(pr.multisig.SignClientState(res.ProofHeight, pr.chain.Path().ClientID, clientState))
 	if err != nil {
 		return nil, err
@@ -212,6 +214,7 @@ func (pr *Prover) SignConsensusStateResponse(res *clienttypes.QueryConsensusStat
 	if err != nil {
 		return nil, err
 	}
+	pr.xxxInit(pr.chain.Codec())
 	res.Proof, err = marshalProofIfNoError(pr.multisig.SignConsensusState(res.ProofHeight, pr.chain.Path().ClientID, dstClientConsHeight, consensusState))
 	if err != nil {
 		return nil, err
@@ -225,6 +228,7 @@ func (pr *Prover) SignConnectionStateResponse(res *conntypes.QueryConnectionResp
 	if err != nil {
 		return nil, err
 	}
+	pr.xxxInit(pr.chain.Codec())
 	res.Proof, err = marshalProofIfNoError(pr.multisig.SignConnectionState(res.ProofHeight, pr.chain.Path().ConnectionID, *res.Connection))
 	if err != nil {
 		return nil, err
@@ -238,6 +242,7 @@ func (pr *Prover) SignChannelStateResponse(res *chantypes.QueryChannelResponse) 
 	if err != nil {
 		return nil, err
 	}
+	pr.xxxInit(pr.chain.Codec())
 	res.Proof, err = marshalProofIfNoError(pr.multisig.SignChannelState(res.ProofHeight, pr.chain.Path().PortID, pr.chain.Path().ChannelID, *res.Channel))
 	if err != nil {
 		return nil, err
@@ -251,6 +256,7 @@ func (pr *Prover) SignPacketStateResponse(res *chantypes.QueryPacketCommitmentRe
 	if err != nil {
 		return nil, err
 	}
+	pr.xxxInit(pr.chain.Codec())
 	res.Proof, err = marshalProofIfNoError(pr.multisig.SignPacketState(res.ProofHeight, pr.chain.Path().PortID, pr.chain.Path().ChannelID, seq, res.Commitment))
 	if err != nil {
 		return nil, err
@@ -264,11 +270,18 @@ func (pr *Prover) SignAcknowledgementStateResponse(res *chantypes.QueryPacketAck
 	if err != nil {
 		return nil, err
 	}
+	pr.xxxInit(pr.chain.Codec())
 	res.Proof, err = marshalProofIfNoError(pr.multisig.SignPacketAcknowledgementState(res.ProofHeight, pr.chain.Path().PortID, pr.chain.Path().ChannelID, seq, res.Acknowledgement))
 	if err != nil {
 		return nil, err
 	}
 	return res, nil
+}
+
+// xxxInit initializes the codec of ethmultisig
+// TODO: This method should be removed after the problem with the prover not giving a codec is fixed
+func (pr *Prover) xxxInit(cdc codec.ProtoCodecMarshaler) {
+	pr.multisig.cdc = cdc
 }
 
 func marshalProofIfNoError(proof *ethmultisigclient.MultiSignature, err error) ([]byte, error) {
