@@ -4,19 +4,20 @@ import (
 	ics23 "github.com/confio/ics23/go"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	clienttypes "github.com/cosmos/ibc-go/modules/core/02-client/types"
 	"github.com/cosmos/ibc-go/modules/core/exported"
 )
 
 func (cs *ClientState) ClientType() string {
-	panic("not implemented") // TODO: Implement
+	return ClientType
 }
 
 func (cs *ClientState) GetLatestHeight() exported.Height {
-	panic("not implemented") // TODO: Implement
+	return clienttypes.Height(cs.LatestHeight)
 }
 
 func (cs *ClientState) Validate() error {
-	panic("not implemented") // TODO: Implement
+	return nil
 }
 
 func (cs *ClientState) GetProofSpecs() []*ics23.ProofSpec {
