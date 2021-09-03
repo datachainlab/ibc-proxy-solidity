@@ -1,4 +1,5 @@
 syntax = "proto3";
+package ibc.relay.ethmultisig;
 
 option go_package = "github.com/datachainlab/ibc-proxy-solidity/modules/relay/ethmultisig";
 
