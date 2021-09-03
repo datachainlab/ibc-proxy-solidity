@@ -1,11 +1,17 @@
 package ethmultisig
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	clienttypes "github.com/cosmos/ibc-go/modules/core/02-client/types"
 	conntypes "github.com/cosmos/ibc-go/modules/core/03-connection/types"
 	chantypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
+	commitmenttypes "github.com/cosmos/ibc-go/modules/core/23-commitment/types"
+	host "github.com/cosmos/ibc-go/modules/core/24-host"
 	ibcexported "github.com/cosmos/ibc-go/modules/core/exported"
 	"github.com/datachainlab/ibc-proxy-prover/pkg/proxy"
+	proxytypes "github.com/datachainlab/ibc-proxy/modules/light-clients/xx-proxy/types"
+	ibcproxytypes "github.com/datachainlab/ibc-proxy/modules/proxy/types"
+	"github.com/hyperledger-labs/yui-relayer/core"
 )
 
 var _ proxy.ProxyChainProverConfigI = (*ProxyChainProverConfig)(nil)
@@ -29,6 +35,36 @@ func NewProxyChainProver(cfg *ProxyChainProverConfig, proxyChain proxy.ProxyChai
 	return &ProxyChainProver{
 		proxyChain: proxyChain,
 		Prover:     pr,
+	}, nil
+}
+
+func (pr *ProxyChainProver) CreateMsgCreateClient(clientID string, dstHeader core.HeaderI, signer sdk.AccAddress) (*clienttypes.MsgCreateClient, error) {
+	msg, err := pr.Prover.CreateMsgCreateClient(clientID, dstHeader, signer)
+	if err != nil {
+		return nil, err
+	}
+	ibcPrefix := commitmenttypes.NewMerklePrefix([]byte(host.StoreKey))
+	proxyPrefix := commitmenttypes.NewMerklePrefix([]byte(ibcproxytypes.StoreKey))
+	clientState := &proxytypes.ClientState{
+		UpstreamClientId: pr.proxyChain.ProxyPath().UpstreamClientID,
+		ProxyClientState: msg.ClientState,
+		IbcPrefix:        &ibcPrefix,
+		ProxyPrefix:      &proxyPrefix,
+		TrustedSetup:     true,
+	}
+	anyClientState, err := clienttypes.PackClientState(clientState)
+	if err != nil {
+		return nil, err
+	}
+	consensusState := proxytypes.NewConsensusState(msg.ConsensusState)
+	anyConsensusState, err := clienttypes.PackConsensusState(consensusState)
+	if err != nil {
+		return nil, err
+	}
+	return &clienttypes.MsgCreateClient{
+		ClientState:    anyClientState,
+		ConsensusState: anyConsensusState,
+		Signer:         msg.Signer,
 	}, nil
 }
 
