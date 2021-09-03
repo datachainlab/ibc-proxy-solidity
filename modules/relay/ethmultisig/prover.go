@@ -10,9 +10,10 @@ import (
 	conntypes "github.com/cosmos/ibc-go/modules/core/03-connection/types"
 	chantypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
 	ibcexported "github.com/cosmos/ibc-go/modules/core/exported"
+
 	ethmultisigclient "github.com/datachainlab/ibc-proxy-solidity/modules/light-clients/xx-ethmultisig/types"
 	"github.com/datachainlab/ibc-proxy-solidity/modules/relay/ethmultisig/wallet"
-	proto "github.com/gogo/protobuf/proto"
+	"github.com/gogo/protobuf/proto"
 	"github.com/hyperledger-labs/yui-relayer/core"
 )
 
@@ -37,7 +38,7 @@ func NewProver(pr ProverConfig, chain core.ChainI) (*Prover, error) {
 	}
 	var keys []*ecdsa.PrivateKey
 	for _, w := range pr.Wallets {
-		prv, err := wallet.GetPrvKeyFromMnemonicAndHDWPath(w.HdwPath, w.Mnemonic)
+		prv, err := wallet.GetPrvKeyFromMnemonicAndHDWPath(w.Mnemonic, w.HdwPath)
 		if err != nil {
 			return nil, err
 		}
