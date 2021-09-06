@@ -77,7 +77,7 @@ func (pr *ProxyChainProver) QueryProxyClientStateWithProof(height int64) (*clien
 }
 
 func (pr *ProxyChainProver) QueryProxyClientConsensusStateWithProof(height int64, dstClientConsHeight ibcexported.Height) (*clienttypes.QueryConsensusStateResponse, error) {
-	res, err := pr.QueryClientConsensusStateWithProof(height, dstClientConsHeight)
+	res, err := pr.proxyChain.QueryProxyClientConsensusState(height, dstClientConsHeight)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +85,7 @@ func (pr *ProxyChainProver) QueryProxyClientConsensusStateWithProof(height int64
 }
 
 func (pr *ProxyChainProver) QueryProxyConnectionStateWithProof(height int64) (*conntypes.QueryConnectionResponse, error) {
-	res, err := pr.QueryConnectionWithProof(height)
+	res, err := pr.proxyChain.QueryProxyConnectionState(height)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +93,7 @@ func (pr *ProxyChainProver) QueryProxyConnectionStateWithProof(height int64) (*c
 }
 
 func (pr *ProxyChainProver) QueryProxyChannelWithProof(height int64) (chanRes *chantypes.QueryChannelResponse, err error) {
-	res, err := pr.QueryChannelWithProof(height)
+	res, err := pr.proxyChain.QueryProxyChannel(height)
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +101,7 @@ func (pr *ProxyChainProver) QueryProxyChannelWithProof(height int64) (chanRes *c
 }
 
 func (pr *ProxyChainProver) QueryProxyPacketCommitmentWithProof(height int64, seq uint64) (comRes *chantypes.QueryPacketCommitmentResponse, err error) {
-	res, err := pr.QueryPacketCommitmentWithProof(height, seq)
+	res, err := pr.proxyChain.QueryProxyPacketCommitment(height, seq)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +109,7 @@ func (pr *ProxyChainProver) QueryProxyPacketCommitmentWithProof(height int64, se
 }
 
 func (pr *ProxyChainProver) QueryProxyPacketAcknowledgementCommitmentWithProof(height int64, seq uint64) (ackRes *chantypes.QueryPacketAcknowledgementResponse, err error) {
-	res, err := pr.QueryPacketAcknowledgementCommitmentWithProof(height, seq)
+	res, err := pr.proxyChain.QueryProxyPacketAcknowledgementCommitment(height, seq)
 	if err != nil {
 		return nil, err
 	}
