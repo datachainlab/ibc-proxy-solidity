@@ -5,7 +5,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	clienttypes "github.com/cosmos/ibc-go/modules/core/02-client/types"
-	commitmenttypes "github.com/cosmos/ibc-go/modules/core/23-commitment/types"
 	"github.com/cosmos/ibc-go/modules/core/exported"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -43,7 +42,7 @@ func ClientStateSignBytes(
 	cdc codec.BinaryCodec,
 	height clienttypes.Height, timestamp uint64,
 	diversifier string,
-	path commitmenttypes.MerklePath,
+	path []byte,
 	clientState exported.ClientState,
 ) ([]byte, error) {
 	clientStateBz, err := cdc.MarshalInterface(clientState)
@@ -51,7 +50,7 @@ func ClientStateSignBytes(
 		return nil, err
 	}
 	data := StateData{
-		Path:  []byte(path.String()),
+		Path:  path,
 		Value: clientStateBz,
 	}
 	dataBz, err := cdc.Marshal(&data)
@@ -74,7 +73,7 @@ func ConsensusStateSignBytes(
 	cdc codec.BinaryCodec,
 	height clienttypes.Height, timestamp uint64,
 	diversifier string,
-	path commitmenttypes.MerklePath,
+	path []byte,
 	consensusState exported.ConsensusState,
 ) ([]byte, error) {
 	consensusStateBz, err := cdc.MarshalInterface(consensusState)
@@ -82,7 +81,7 @@ func ConsensusStateSignBytes(
 		return nil, err
 	}
 	data := StateData{
-		Path:  []byte(path.String()),
+		Path:  path,
 		Value: consensusStateBz,
 	}
 	dataBz, err := cdc.Marshal(&data)

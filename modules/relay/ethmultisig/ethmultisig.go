@@ -48,7 +48,7 @@ func (m ETHMultisig) SignConsensusState(height clienttypes.Height, clientID stri
 	if err != nil {
 		return nil, err
 	}
-	path, err := ConsensusCommitmentKey(m.prefix, clientID, dstClientConsHeight.GetRevisionHeight())
+	path, err := ethmultisigtypes.ConsensusCommitmentKey(m.prefix, clientID, dstClientConsHeight.GetRevisionHeight())
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func (m ETHMultisig) SignClientState(height clienttypes.Height, clientID string,
 	if err != nil {
 		return nil, err
 	}
-	path, err := ClientCommitmentKey(m.prefix, clientID)
+	path, err := ethmultisigtypes.ClientCommitmentKey(m.prefix, clientID)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func (m ETHMultisig) SignConnectionState(height clienttypes.Height, connectionID
 	if err != nil {
 		return nil, err
 	}
-	path, err := ConnectionCommitmentKey(m.prefix, connectionID)
+	path, err := ethmultisigtypes.ConnectionCommitmentKey(m.prefix, connectionID)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func (m ETHMultisig) SignChannelState(height clienttypes.Height, portID, channel
 	if err != nil {
 		return nil, err
 	}
-	path, err := ChannelCommitmentKey(m.prefix, portID, channelID)
+	path, err := ethmultisigtypes.ChannelCommitmentKey(m.prefix, portID, channelID)
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +95,7 @@ func (m ETHMultisig) SignPacketState(height clienttypes.Height, portID, channelI
 	if len(packetCommitment) != 32 {
 		return nil, fmt.Errorf("packetCommitment length must be 32")
 	}
-	path, err := PacketCommitmentKey(m.prefix, portID, channelID, sequence)
+	path, err := ethmultisigtypes.PacketCommitmentKey(m.prefix, portID, channelID, sequence)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +106,7 @@ func (m ETHMultisig) SignPacketAcknowledgementState(height clienttypes.Height, p
 	if len(acknowledgementCommitment) != 32 {
 		return nil, fmt.Errorf("acknowledgementCommitment length must be 32")
 	}
-	path, err := PacketAcknowledgementCommitmentKey(m.prefix, portID, channelID, sequence)
+	path, err := ethmultisigtypes.PacketAcknowledgementCommitmentKey(m.prefix, portID, channelID, sequence)
 	if err != nil {
 		return nil, err
 	}

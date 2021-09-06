@@ -6,8 +6,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	clienttypes "github.com/cosmos/ibc-go/modules/core/02-client/types"
-	commitmenttypes "github.com/cosmos/ibc-go/modules/core/23-commitment/types"
-	host "github.com/cosmos/ibc-go/modules/core/24-host"
 	"github.com/cosmos/ibc-go/modules/core/exported"
 )
 
@@ -87,9 +85,7 @@ func (cs ClientState) VerifyClientState(store sdk.KVStore, cdc codec.BinaryCodec
 	if err != nil {
 		return err
 	}
-	// TODO Path format is correct?
-	clientPrefixedPath := commitmenttypes.NewMerklePath(host.FullClientStatePath(counterpartyClientIdentifier))
-	path, err := commitmenttypes.ApplyPrefix(prefix, clientPrefixedPath)
+	path, err := ClientCommitmentKey(prefix.Bytes(), counterpartyClientIdentifier)
 	if err != nil {
 		return err
 	}
@@ -105,9 +101,7 @@ func (cs ClientState) VerifyClientConsensusState(store sdk.KVStore, cdc codec.Bi
 	if err != nil {
 		return err
 	}
-	// TODO Path format is correct?
-	clientPrefixedPath := commitmenttypes.NewMerklePath(host.FullConsensusStatePath(counterpartyClientIdentifier, consensusHeight))
-	path, err := commitmenttypes.ApplyPrefix(prefix, clientPrefixedPath)
+	path, err := ConsensusCommitmentKey(prefix.Bytes(), counterpartyClientIdentifier, consensusHeight.GetRevisionHeight())
 	if err != nil {
 		return err
 	}
