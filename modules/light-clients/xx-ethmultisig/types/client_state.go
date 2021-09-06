@@ -4,7 +4,10 @@ import (
 	ics23 "github.com/confio/ics23/go"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	clienttypes "github.com/cosmos/ibc-go/modules/core/02-client/types"
+	commitmenttypes "github.com/cosmos/ibc-go/modules/core/23-commitment/types"
+	host "github.com/cosmos/ibc-go/modules/core/24-host"
 	"github.com/cosmos/ibc-go/modules/core/exported"
 )
 
@@ -21,20 +24,24 @@ func (cs *ClientState) Validate() error {
 }
 
 func (cs *ClientState) GetProofSpecs() []*ics23.ProofSpec {
-	panic("not implemented") // TODO: Implement
+	return nil
 }
 
 // Initialization function
 // Clients must validate the initial consensus state, and may store any client-specific metadata
 // necessary for correct light client operation
 func (cs *ClientState) Initialize(_ sdk.Context, _ codec.BinaryCodec, _ sdk.KVStore, _ exported.ConsensusState) error {
-	panic("not implemented") // TODO: Implement
+	return nil
 }
 
 // Status function
 // Clients must return their status. Only Active clients are allowed to process packets.
 func (cs *ClientState) Status(ctx sdk.Context, clientStore sdk.KVStore, cdc codec.BinaryCodec) exported.Status {
-	panic("not implemented") // TODO: Implement
+	if !clienttypes.Height(cs.FrozenHeight).IsZero() {
+		return exported.Frozen
+	}
+
+	return exported.Active
 }
 
 // Genesis function
@@ -69,16 +76,46 @@ func (cs *ClientState) VerifyUpgradeAndUpdateState(ctx sdk.Context, cdc codec.Bi
 // Ledger enforced fields are maintained while all custom fields are zero values
 // Used to verify upgrades
 func (cs *ClientState) ZeroCustomFields() exported.ClientState {
-	panic("not implemented") // TODO: Implement
+	return &ClientState{
+		LatestHeight: cs.LatestHeight,
+	}
 }
 
 // State verification functions
-func (cs *ClientState) VerifyClientState(store sdk.KVStore, cdc codec.BinaryCodec, height exported.Height, prefix exported.Prefix, counterpartyClientIdentifier string, proof []byte, clientState exported.ClientState) error {
-	panic("not implemented") // TODO: Implement
+func (cs ClientState) VerifyClientState(store sdk.KVStore, cdc codec.BinaryCodec, height exported.Height, prefix exported.Prefix, counterpartyClientIdentifier string, proof []byte, clientState exported.ClientState) error {
+	cons, sigData, err := produceVerificationArgs(store, cdc, cs, height, prefix, proof)
+	if err != nil {
+		return err
+	}
+	// TODO Path format is correct?
+	clientPrefixedPath := commitmenttypes.NewMerklePath(host.FullClientStatePath(counterpartyClientIdentifier))
+	path, err := commitmenttypes.ApplyPrefix(prefix, clientPrefixedPath)
+	if err != nil {
+		return err
+	}
+	signBz, err := ClientStateSignBytes(cdc, height.(clienttypes.Height), sigData.Timestamp, cons.Diversifier, path, clientState)
+	if err != nil {
+		return err
+	}
+	return VerifySignature(cons.GetAddresses(), sigData, signBz)
 }
 
-func (cs *ClientState) VerifyClientConsensusState(store sdk.KVStore, cdc codec.BinaryCodec, height exported.Height, counterpartyClientIdentifier string, consensusHeight exported.Height, prefix exported.Prefix, proof []byte, consensusState exported.ConsensusState) error {
-	panic("not implemented") // TODO: Implement
+func (cs ClientState) VerifyClientConsensusState(store sdk.KVStore, cdc codec.BinaryCodec, height exported.Height, counterpartyClientIdentifier string, consensusHeight exported.Height, prefix exported.Prefix, proof []byte, consensusState exported.ConsensusState) error {
+	cons, sigData, err := produceVerificationArgs(store, cdc, cs, height, prefix, proof)
+	if err != nil {
+		return err
+	}
+	// TODO Path format is correct?
+	clientPrefixedPath := commitmenttypes.NewMerklePath(host.FullConsensusStatePath(counterpartyClientIdentifier, consensusHeight))
+	path, err := commitmenttypes.ApplyPrefix(prefix, clientPrefixedPath)
+	if err != nil {
+		return err
+	}
+	signBz, err := ConsensusStateSignBytes(cdc, height.(clienttypes.Height), sigData.Timestamp, cons.Diversifier, path, consensusState)
+	if err != nil {
+		return err
+	}
+	return VerifySignature(cons.GetAddresses(), sigData, signBz)
 }
 
 func (cs *ClientState) VerifyConnectionState(store sdk.KVStore, cdc codec.BinaryCodec, height exported.Height, prefix exported.Prefix, proof []byte, connectionID string, connectionEnd exported.ConnectionI) error {
@@ -103,4 +140,34 @@ func (cs *ClientState) VerifyPacketReceiptAbsence(ctx sdk.Context, store sdk.KVS
 
 func (cs *ClientState) VerifyNextSequenceRecv(ctx sdk.Context, store sdk.KVStore, cdc codec.BinaryCodec, height exported.Height, delayTimePeriod uint64, delayBlockPeriod uint64, prefix exported.Prefix, proof []byte, portID string, channelID string, nextSequenceRecv uint64) error {
 	panic("not implemented") // TODO: Implement
+}
+
+// produceVerificationArgs perfoms the basic checks on the arguments that are
+// shared between the verification functions and returns the public key of the
+// consensus state, the unmarshalled proof representing the signature and timestamp
+// along with the solo-machine sequence encoded in the proofHeight.
+func produceVerificationArgs(
+	store sdk.KVStore,
+	cdc codec.BinaryCodec,
+	cs ClientState,
+	height exported.Height,
+	prefix exported.Prefix,
+	proof []byte,
+) (*ConsensusState, *MultiSignature, error) {
+
+	var multiSig MultiSignature
+	if err := cdc.Unmarshal(proof, &multiSig); err != nil {
+		return nil, nil, err
+	}
+
+	cons, err := getConsensusState(store, cdc, height)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if cons.GetTimestamp() > multiSig.Timestamp {
+		return nil, nil, sdkerrors.Wrapf(ErrInvalidProof, "the consensus state timestamp is greater than the signature timestamp (%d >= %d)", cons.GetTimestamp(), multiSig.Timestamp)
+	}
+
+	return cons, &multiSig, nil
 }
