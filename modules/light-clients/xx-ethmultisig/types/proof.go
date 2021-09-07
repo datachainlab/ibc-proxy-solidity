@@ -19,18 +19,13 @@ func VerifySignature(addresses []common.Address, multiSig *MultiSignature, signB
 		if len(sig) != crypto.SignatureLength {
 			return fmt.Errorf("signature must be 65 bytes long")
 		}
-		if sig[crypto.RecoveryIDOffset] != 27 && sig[crypto.RecoveryIDOffset] != 28 {
-			return fmt.Errorf("invalid Ethereum signature (V is not 27 or 28)")
-		}
-		sig[crypto.RecoveryIDOffset] -= 27 // Transform yellow paper V from 27/28 to 0/1
-
 		rpk, err := crypto.SigToPub(h, sig)
 		if err != nil {
 			return err
 		}
 		signer := crypto.PubkeyToAddress(*rpk)
 		if addresses[i] != signer {
-			return fmt.Errorf("signature does not match signer")
+			return fmt.Errorf("signature does not match signer: %v != %v (hash=%v)", addresses[i], signer, h)
 		}
 	}
 	return nil

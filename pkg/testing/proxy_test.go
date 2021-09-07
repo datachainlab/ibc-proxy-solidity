@@ -73,7 +73,7 @@ func (suite *ProxyTestSuite) TestMultisig() {
 	// VerifyClientState
 	{
 		targetClientState := makeMultisigClientState(1)
-		proofClient, err := prover.SignClientState(proofHeight, counterpartyClientID, targetClientState)
+		proofClient, _, err := prover.SignClientState(proofHeight, counterpartyClientID, targetClientState)
 		suite.Require().NoError(err)
 		anyClientStateBytes, err := suite.cdc.MarshalInterface(targetClientState)
 		suite.Require().NoError(err)
@@ -92,7 +92,7 @@ func (suite *ProxyTestSuite) TestMultisig() {
 	{
 		targetConsensusState := makeMultisigConsensusState(nil, "tester2", uint64(time.Now().UnixNano()))
 		consensusHeight := clienttypes.NewHeight(0, 100)
-		proofConsensus, err := prover.SignConsensusState(proofHeight, counterpartyClientID, consensusHeight, targetConsensusState)
+		proofConsensus, _, err := prover.SignConsensusState(proofHeight, counterpartyClientID, consensusHeight, targetConsensusState)
 		suite.Require().NoError(err)
 		anyConsensusStateBytes, err := suite.cdc.MarshalInterface(targetConsensusState)
 		suite.Require().NoError(err)
@@ -111,7 +111,7 @@ func (suite *ProxyTestSuite) TestMultisig() {
 	{
 		const connectionID = "connection-0"
 		targetConnection := conntypes.NewConnectionEnd(conntypes.INIT, counterpartyClientID, conntypes.NewCounterparty(clientID, connectionID, types.NewMerklePrefix([]byte("ibc"))), []*conntypes.Version{}, 0)
-		proof, err := prover.SignConnectionState(proofHeight, connectionID, targetConnection)
+		proof, _, err := prover.SignConnectionState(proofHeight, connectionID, targetConnection)
 		suite.Require().NoError(err)
 		proofBytes, err := proto.Marshal(proof)
 		suite.Require().NoError(err)
@@ -131,7 +131,7 @@ func (suite *ProxyTestSuite) TestMultisig() {
 	// VerifyChannelstate
 	{
 		targetChannel := chantypes.NewChannel(chantypes.INIT, chantypes.UNORDERED, chantypes.NewCounterparty(cpPortID, cpChannelID), []string{"connection-0"}, "1")
-		proof, err := prover.SignChannelState(proofHeight, portID, channelID, targetChannel)
+		proof, _, err := prover.SignChannelState(proofHeight, portID, channelID, targetChannel)
 		suite.Require().NoError(err)
 		proofBytes, err := proto.Marshal(proof)
 		suite.Require().NoError(err)
@@ -149,7 +149,7 @@ func (suite *ProxyTestSuite) TestMultisig() {
 	// VerifyPacketCommitment
 	{
 		commitment := sha256.Sum256([]byte("test"))
-		proof, err := prover.SignPacketState(proofHeight, portID, channelID, 1, commitment[:])
+		proof, _, err := prover.SignPacketState(proofHeight, portID, channelID, 1, commitment[:])
 		suite.Require().NoError(err)
 		proofBytes, err := proto.Marshal(proof)
 		suite.Require().NoError(err)
@@ -166,7 +166,7 @@ func (suite *ProxyTestSuite) TestMultisig() {
 	{
 		acknowledgement := []byte("ack")
 		commitment := sha256.Sum256(acknowledgement)
-		proof, err := prover.SignPacketAcknowledgementState(proofHeight, portID, channelID, 1, commitment[:])
+		proof, _, err := prover.SignPacketAcknowledgementState(proofHeight, portID, channelID, 1, commitment[:])
 		suite.Require().NoError(err)
 		proofBytes, err := proto.Marshal(proof)
 		suite.Require().NoError(err)
@@ -178,6 +178,25 @@ func (suite *ProxyTestSuite) TestMultisig() {
 		suite.Require().NoError(err)
 		suite.Require().True(ok)
 	}
+}
+
+func (suite *ProxyTestSuite) TestMultisigSign() {
+	const (
+		diversifier          = "tester"
+		clientID             = "testclient-0"
+		counterpartyClientID = "testcounterparty-0"
+	)
+	proofHeight := clienttypes.NewHeight(0, 1)
+	prefix := []byte("ibc")
+
+	prover := ethmultisig.NewETHMultisig(suite.cdc, diversifier, []*ecdsa.PrivateKey{suite.chain.prvKey(0)}, prefix)
+
+	targetClientState := makeMultisigClientState(1)
+	proofClient, signBytes, err := prover.SignClientState(proofHeight, counterpartyClientID, targetClientState)
+	suite.Require().NoError(err)
+
+	err = ethmultisigtypes.VerifySignature(prover.Addresses(), proofClient, signBytes)
+	suite.Require().NoError(err)
 }
 
 func (suite *ProxyTestSuite) TestProxy() {
@@ -216,7 +235,7 @@ func (suite *ProxyTestSuite) TestProxy() {
 	// VerifyClientState
 	{
 		targetClientState := makeMultisigClientState(1)
-		proofClient, err := prover.SignClientState(proofHeight, counterpartyClientID, targetClientState)
+		proofClient, _, err := prover.SignClientState(proofHeight, counterpartyClientID, targetClientState)
 		suite.Require().NoError(err)
 		anyClientStateBytes, err := suite.cdc.MarshalInterface(targetClientState)
 		suite.Require().NoError(err)
@@ -236,7 +255,7 @@ func (suite *ProxyTestSuite) TestProxy() {
 	{
 		targetConsensusState := makeMultisigConsensusState(nil, "tester2", uint64(time.Now().UnixNano()))
 		consensusHeight := clienttypes.NewHeight(0, 100)
-		proofConsensus, err := prover.SignConsensusState(proofHeight, counterpartyClientID, consensusHeight, targetConsensusState)
+		proofConsensus, _, err := prover.SignConsensusState(proofHeight, counterpartyClientID, consensusHeight, targetConsensusState)
 		suite.Require().NoError(err)
 		anyConsensusStateBytes, err := suite.cdc.MarshalInterface(targetConsensusState)
 		suite.Require().NoError(err)
@@ -255,7 +274,7 @@ func (suite *ProxyTestSuite) TestProxy() {
 	{
 		const connectionID = "connection-0"
 		targetConnection := conntypes.NewConnectionEnd(conntypes.INIT, counterpartyClientID, conntypes.NewCounterparty(clientID, connectionID, types.NewMerklePrefix([]byte("ibc"))), []*conntypes.Version{}, 0)
-		proof, err := prover.SignConnectionState(proofHeight, connectionID, targetConnection)
+		proof, _, err := prover.SignConnectionState(proofHeight, connectionID, targetConnection)
 		suite.Require().NoError(err)
 		proofBytes, err := proto.Marshal(proof)
 		suite.Require().NoError(err)
@@ -275,7 +294,7 @@ func (suite *ProxyTestSuite) TestProxy() {
 	// VerifyChannelstate
 	{
 		targetChannel := chantypes.NewChannel(chantypes.INIT, chantypes.UNORDERED, chantypes.NewCounterparty(cpPortID, cpChannelID), []string{"connection-0"}, "1")
-		proof, err := prover.SignChannelState(proofHeight, portID, channelID, targetChannel)
+		proof, _, err := prover.SignChannelState(proofHeight, portID, channelID, targetChannel)
 		suite.Require().NoError(err)
 		proofBytes, err := proto.Marshal(proof)
 		suite.Require().NoError(err)
@@ -293,7 +312,7 @@ func (suite *ProxyTestSuite) TestProxy() {
 	// VerifyPacketCommitment
 	{
 		commitment := sha256.Sum256([]byte("test"))
-		proof, err := prover.SignPacketState(proofHeight, portID, channelID, 2, commitment[:])
+		proof, _, err := prover.SignPacketState(proofHeight, portID, channelID, 2, commitment[:])
 		suite.Require().NoError(err)
 		proofBytes, err := proto.Marshal(proof)
 		suite.Require().NoError(err)
@@ -310,7 +329,7 @@ func (suite *ProxyTestSuite) TestProxy() {
 	{
 		acknowledgement := []byte("ack")
 		commitment := sha256.Sum256(acknowledgement)
-		proof, err := prover.SignPacketAcknowledgementState(proofHeight, portID, channelID, 2, commitment[:])
+		proof, _, err := prover.SignPacketAcknowledgementState(proofHeight, portID, channelID, 2, commitment[:])
 		suite.Require().NoError(err)
 		proofBytes, err := proto.Marshal(proof)
 		suite.Require().NoError(err)

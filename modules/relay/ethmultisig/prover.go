@@ -284,7 +284,7 @@ func (pr *Prover) xxxInit(cdc codec.ProtoCodecMarshaler) {
 	pr.multisig.cdc = cdc
 }
 
-func marshalProofIfNoError(proof *ethmultisigclient.MultiSignature, err error) ([]byte, error) {
+func marshalProofIfNoError(proof *ethmultisigclient.MultiSignature, _ []byte, err error) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
