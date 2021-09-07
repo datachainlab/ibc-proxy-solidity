@@ -107,7 +107,7 @@ func (pr *Prover) QueryClientConsensusStateWithProof(_ int64, dstClientConsHeigh
 	if err != nil {
 		return nil, err
 	}
-	return pr.SignConsensusStateResponse(res, dstClientConsHeight)
+	return pr.SignConsensusStateResponse(res, pr.chain.Path().ClientID, dstClientConsHeight)
 }
 
 // QueryClientStateWithProof returns the ClientState and its proof
@@ -120,7 +120,7 @@ func (pr *Prover) QueryClientStateWithProof(_ int64) (*clienttypes.QueryClientSt
 	if err != nil {
 		return nil, err
 	}
-	return pr.SignClientStateResponse(res)
+	return pr.SignClientStateResponse(res, pr.chain.Path().ClientID)
 }
 
 // QueryConnectionWithProof returns the Connection and its proof
@@ -133,7 +133,7 @@ func (pr *Prover) QueryConnectionWithProof(_ int64) (*conntypes.QueryConnectionR
 	if err != nil {
 		return nil, err
 	}
-	return pr.SignConnectionStateResponse(res)
+	return pr.SignConnectionStateResponse(res, pr.chain.Path().ConnectionID)
 }
 
 // QueryChannelWithProof returns the Channel and its proof
@@ -146,7 +146,7 @@ func (pr *Prover) QueryChannelWithProof(_ int64) (*chantypes.QueryChannelRespons
 	if err != nil {
 		return nil, err
 	}
-	return pr.SignChannelStateResponse(res)
+	return pr.SignChannelStateResponse(res, pr.chain.Path().PortID, pr.chain.Path().ChannelID)
 }
 
 // QueryPacketCommitmentWithProof returns the packet commitment and its proof
@@ -159,7 +159,7 @@ func (pr *Prover) QueryPacketCommitmentWithProof(_ int64, seq uint64) (comRes *c
 	if err != nil {
 		return nil, err
 	}
-	return pr.SignPacketStateResponse(res, seq)
+	return pr.SignPacketStateResponse(res, pr.chain.Path().PortID, pr.chain.Path().ChannelID, seq)
 }
 
 // QueryPacketAcknowledgementCommitmentWithProof returns the packet acknowledgement commitment and its proof
@@ -172,7 +172,7 @@ func (pr *Prover) QueryPacketAcknowledgementCommitmentWithProof(_ int64, seq uin
 	if err != nil {
 		return nil, err
 	}
-	return pr.SignAcknowledgementStateResponse(res, seq)
+	return pr.SignAcknowledgementStateResponse(res, pr.chain.Path().PortID, pr.chain.Path().ChannelID, seq)
 }
 
 func (pr *Prover) GetHeight() (clienttypes.Height, error) {
@@ -188,7 +188,7 @@ func (pr *Prover) GetSequeunce() (uint64, error) {
 	return 1, nil
 }
 
-func (pr *Prover) SignClientStateResponse(res *clienttypes.QueryClientStateResponse) (*clienttypes.QueryClientStateResponse, error) {
+func (pr *Prover) SignClientStateResponse(res *clienttypes.QueryClientStateResponse, clientID string) (*clienttypes.QueryClientStateResponse, error) {
 	clientState, err := clienttypes.UnpackClientState(res.ClientState)
 	if err != nil {
 		return nil, err
@@ -198,14 +198,14 @@ func (pr *Prover) SignClientStateResponse(res *clienttypes.QueryClientStateRespo
 		return nil, err
 	}
 	pr.xxxInit(pr.chain.Codec())
-	res.Proof, err = marshalProofIfNoError(pr.multisig.SignClientState(res.ProofHeight, pr.chain.Path().ClientID, clientState))
+	res.Proof, err = marshalProofIfNoError(pr.multisig.SignClientState(res.ProofHeight, clientID, clientState))
 	if err != nil {
 		return nil, err
 	}
 	return res, nil
 }
 
-func (pr *Prover) SignConsensusStateResponse(res *clienttypes.QueryConsensusStateResponse, dstClientConsHeight ibcexported.Height) (*clienttypes.QueryConsensusStateResponse, error) {
+func (pr *Prover) SignConsensusStateResponse(res *clienttypes.QueryConsensusStateResponse, clientID string, dstClientConsHeight ibcexported.Height) (*clienttypes.QueryConsensusStateResponse, error) {
 	consensusState, err := clienttypes.UnpackConsensusState(res.ConsensusState)
 	if err != nil {
 		return nil, err
@@ -215,63 +215,63 @@ func (pr *Prover) SignConsensusStateResponse(res *clienttypes.QueryConsensusStat
 		return nil, err
 	}
 	pr.xxxInit(pr.chain.Codec())
-	res.Proof, err = marshalProofIfNoError(pr.multisig.SignConsensusState(res.ProofHeight, pr.chain.Path().ClientID, dstClientConsHeight, consensusState))
+	res.Proof, err = marshalProofIfNoError(pr.multisig.SignConsensusState(res.ProofHeight, clientID, dstClientConsHeight, consensusState))
 	if err != nil {
 		return nil, err
 	}
 	return res, nil
 }
 
-func (pr *Prover) SignConnectionStateResponse(res *conntypes.QueryConnectionResponse) (*conntypes.QueryConnectionResponse, error) {
+func (pr *Prover) SignConnectionStateResponse(res *conntypes.QueryConnectionResponse, connectionID string) (*conntypes.QueryConnectionResponse, error) {
 	var err error
 	res.ProofHeight, err = pr.GetHeight()
 	if err != nil {
 		return nil, err
 	}
 	pr.xxxInit(pr.chain.Codec())
-	res.Proof, err = marshalProofIfNoError(pr.multisig.SignConnectionState(res.ProofHeight, pr.chain.Path().ConnectionID, *res.Connection))
+	res.Proof, err = marshalProofIfNoError(pr.multisig.SignConnectionState(res.ProofHeight, connectionID, *res.Connection))
 	if err != nil {
 		return nil, err
 	}
 	return res, nil
 }
 
-func (pr *Prover) SignChannelStateResponse(res *chantypes.QueryChannelResponse) (*chantypes.QueryChannelResponse, error) {
+func (pr *Prover) SignChannelStateResponse(res *chantypes.QueryChannelResponse, portID, channelID string) (*chantypes.QueryChannelResponse, error) {
 	var err error
 	res.ProofHeight, err = pr.GetHeight()
 	if err != nil {
 		return nil, err
 	}
 	pr.xxxInit(pr.chain.Codec())
-	res.Proof, err = marshalProofIfNoError(pr.multisig.SignChannelState(res.ProofHeight, pr.chain.Path().PortID, pr.chain.Path().ChannelID, *res.Channel))
+	res.Proof, err = marshalProofIfNoError(pr.multisig.SignChannelState(res.ProofHeight, portID, channelID, *res.Channel))
 	if err != nil {
 		return nil, err
 	}
 	return res, nil
 }
 
-func (pr *Prover) SignPacketStateResponse(res *chantypes.QueryPacketCommitmentResponse, seq uint64) (*chantypes.QueryPacketCommitmentResponse, error) {
+func (pr *Prover) SignPacketStateResponse(res *chantypes.QueryPacketCommitmentResponse, portID, channelID string, seq uint64) (*chantypes.QueryPacketCommitmentResponse, error) {
 	var err error
 	res.ProofHeight, err = pr.GetHeight()
 	if err != nil {
 		return nil, err
 	}
 	pr.xxxInit(pr.chain.Codec())
-	res.Proof, err = marshalProofIfNoError(pr.multisig.SignPacketState(res.ProofHeight, pr.chain.Path().PortID, pr.chain.Path().ChannelID, seq, res.Commitment))
+	res.Proof, err = marshalProofIfNoError(pr.multisig.SignPacketState(res.ProofHeight, portID, channelID, seq, res.Commitment))
 	if err != nil {
 		return nil, err
 	}
 	return res, nil
 }
 
-func (pr *Prover) SignAcknowledgementStateResponse(res *chantypes.QueryPacketAcknowledgementResponse, seq uint64) (*chantypes.QueryPacketAcknowledgementResponse, error) {
+func (pr *Prover) SignAcknowledgementStateResponse(res *chantypes.QueryPacketAcknowledgementResponse, portID, channelID string, seq uint64) (*chantypes.QueryPacketAcknowledgementResponse, error) {
 	var err error
 	res.ProofHeight, err = pr.GetHeight()
 	if err != nil {
 		return nil, err
 	}
 	pr.xxxInit(pr.chain.Codec())
-	res.Proof, err = marshalProofIfNoError(pr.multisig.SignPacketAcknowledgementState(res.ProofHeight, pr.chain.Path().PortID, pr.chain.Path().ChannelID, seq, res.Acknowledgement))
+	res.Proof, err = marshalProofIfNoError(pr.multisig.SignPacketAcknowledgementState(res.ProofHeight, portID, channelID, seq, res.Acknowledgement))
 	if err != nil {
 		return nil, err
 	}

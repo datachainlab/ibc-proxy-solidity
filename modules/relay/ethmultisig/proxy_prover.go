@@ -73,7 +73,7 @@ func (pr *ProxyChainProver) QueryProxyClientStateWithProof(height int64) (*clien
 	if err != nil {
 		return nil, err
 	}
-	return pr.SignClientStateResponse(res)
+	return pr.SignClientStateResponse(res, pr.proxyChain.ProxyPath().UpstreamChain.Path().ClientID)
 }
 
 func (pr *ProxyChainProver) QueryProxyClientConsensusStateWithProof(height int64, dstClientConsHeight ibcexported.Height) (*clienttypes.QueryConsensusStateResponse, error) {
@@ -81,7 +81,7 @@ func (pr *ProxyChainProver) QueryProxyClientConsensusStateWithProof(height int64
 	if err != nil {
 		return nil, err
 	}
-	return pr.SignConsensusStateResponse(res, dstClientConsHeight)
+	return pr.SignConsensusStateResponse(res, pr.proxyChain.ProxyPath().UpstreamChain.Path().ClientID, dstClientConsHeight)
 }
 
 func (pr *ProxyChainProver) QueryProxyConnectionStateWithProof(height int64) (*conntypes.QueryConnectionResponse, error) {
@@ -89,7 +89,7 @@ func (pr *ProxyChainProver) QueryProxyConnectionStateWithProof(height int64) (*c
 	if err != nil {
 		return nil, err
 	}
-	return pr.SignConnectionStateResponse(res)
+	return pr.SignConnectionStateResponse(res, pr.proxyChain.ProxyPath().UpstreamChain.Path().ConnectionID)
 }
 
 func (pr *ProxyChainProver) QueryProxyChannelWithProof(height int64) (chanRes *chantypes.QueryChannelResponse, err error) {
@@ -97,7 +97,7 @@ func (pr *ProxyChainProver) QueryProxyChannelWithProof(height int64) (chanRes *c
 	if err != nil {
 		return nil, err
 	}
-	return pr.SignChannelStateResponse(res)
+	return pr.SignChannelStateResponse(res, pr.proxyChain.ProxyPath().UpstreamChain.Path().PortID, pr.proxyChain.ProxyPath().UpstreamChain.Path().ChannelID)
 }
 
 func (pr *ProxyChainProver) QueryProxyPacketCommitmentWithProof(height int64, seq uint64) (comRes *chantypes.QueryPacketCommitmentResponse, err error) {
@@ -105,7 +105,7 @@ func (pr *ProxyChainProver) QueryProxyPacketCommitmentWithProof(height int64, se
 	if err != nil {
 		return nil, err
 	}
-	return pr.SignPacketStateResponse(res, seq)
+	return pr.SignPacketStateResponse(res, pr.proxyChain.ProxyPath().UpstreamChain.Path().PortID, pr.proxyChain.ProxyPath().UpstreamChain.Path().ChannelID, seq)
 }
 
 func (pr *ProxyChainProver) QueryProxyPacketAcknowledgementCommitmentWithProof(height int64, seq uint64) (ackRes *chantypes.QueryPacketAcknowledgementResponse, err error) {
@@ -113,5 +113,5 @@ func (pr *ProxyChainProver) QueryProxyPacketAcknowledgementCommitmentWithProof(h
 	if err != nil {
 		return nil, err
 	}
-	return pr.SignAcknowledgementStateResponse(res, seq)
+	return pr.SignAcknowledgementStateResponse(res, pr.proxyChain.ProxyPath().UpstreamChain.Path().PortID, pr.proxyChain.ProxyPath().UpstreamChain.Path().ChannelID, seq)
 }
