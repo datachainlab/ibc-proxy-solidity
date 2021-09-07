@@ -1,22 +1,33 @@
 package types
 
-import "github.com/cosmos/ibc-go/modules/core/exported"
+import (
+	"github.com/cosmos/ibc-go/modules/core/exported"
+	"github.com/ethereum/go-ethereum/common"
+)
 
 func (cs *ConsensusState) ClientType() string {
-	panic("not implemented") // TODO: Implement
+	return ClientType
 }
 
 // GetRoot returns the commitment root of the consensus state,
 // which is used for key-value pair verification.
 func (cs *ConsensusState) GetRoot() exported.Root {
-	panic("not implemented") // TODO: Implement
+	return nil
 }
 
 // GetTimestamp returns the timestamp (in nanoseconds) of the consensus state
 func (cs *ConsensusState) GetTimestamp() uint64 {
-	panic("not implemented") // TODO: Implement
+	return cs.Timestamp
 }
 
 func (cs *ConsensusState) ValidateBasic() error {
-	panic("not implemented") // TODO: Implement
+	return nil
+}
+
+func (cs *ConsensusState) GetAddresses() []common.Address {
+	var addrs []common.Address
+	for _, addr := range cs.Addresses {
+		addrs = append(addrs, common.BytesToAddress(addr))
+	}
+	return addrs
 }

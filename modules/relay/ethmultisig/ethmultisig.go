@@ -43,83 +43,83 @@ func (m ETHMultisig) GetCurrentTimestamp() uint64 {
 	return uint64(time.Now().UnixNano())
 }
 
-func (m ETHMultisig) SignConsensusState(height clienttypes.Height, clientID string, dstClientConsHeight ibcexported.Height, consensusState exported.ConsensusState) (*ethmultisigtypes.MultiSignature, error) {
+func (m ETHMultisig) SignConsensusState(height clienttypes.Height, clientID string, dstClientConsHeight ibcexported.Height, consensusState exported.ConsensusState) (*ethmultisigtypes.MultiSignature, []byte, error) {
 	bz, err := m.cdc.MarshalInterface(consensusState)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	path, err := ConsensusCommitmentKey(m.prefix, clientID, dstClientConsHeight.GetRevisionHeight())
+	path, err := ethmultisigtypes.ConsensusCommitmentKey(m.prefix, clientID, dstClientConsHeight.GetRevisionHeight())
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	return m.SignState(ethmultisigtypes.Height(height), ethmultisigtypes.CONSENSUS, path, bz)
 }
 
-func (m ETHMultisig) SignClientState(height clienttypes.Height, clientID string, clientState exported.ClientState) (*ethmultisigtypes.MultiSignature, error) {
+func (m ETHMultisig) SignClientState(height clienttypes.Height, clientID string, clientState exported.ClientState) (*ethmultisigtypes.MultiSignature, []byte, error) {
 	bz, err := m.cdc.MarshalInterface(clientState)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	path, err := ClientCommitmentKey(m.prefix, clientID)
+	path, err := ethmultisigtypes.ClientCommitmentKey(m.prefix, clientID)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	return m.SignState(ethmultisigtypes.Height(height), ethmultisigtypes.CLIENT, path, bz)
 }
 
-func (m ETHMultisig) SignConnectionState(height clienttypes.Height, connectionID string, connection conntypes.ConnectionEnd) (*ethmultisigtypes.MultiSignature, error) {
+func (m ETHMultisig) SignConnectionState(height clienttypes.Height, connectionID string, connection conntypes.ConnectionEnd) (*ethmultisigtypes.MultiSignature, []byte, error) {
 	bz, err := m.cdc.Marshal(&connection)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	path, err := ConnectionCommitmentKey(m.prefix, connectionID)
+	path, err := ethmultisigtypes.ConnectionCommitmentKey(m.prefix, connectionID)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	return m.SignState(ethmultisigtypes.Height(height), ethmultisigtypes.CONNECTION, path, bz)
 }
 
-func (m ETHMultisig) SignChannelState(height clienttypes.Height, portID, channelID string, channel chantypes.Channel) (*ethmultisigtypes.MultiSignature, error) {
+func (m ETHMultisig) SignChannelState(height clienttypes.Height, portID, channelID string, channel chantypes.Channel) (*ethmultisigtypes.MultiSignature, []byte, error) {
 	bz, err := m.cdc.Marshal(&channel)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	path, err := ChannelCommitmentKey(m.prefix, portID, channelID)
+	path, err := ethmultisigtypes.ChannelCommitmentKey(m.prefix, portID, channelID)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	return m.SignState(ethmultisigtypes.Height(height), ethmultisigtypes.CHANNEL, path, bz)
 }
 
-func (m ETHMultisig) SignPacketState(height clienttypes.Height, portID, channelID string, sequence uint64, packetCommitment []byte) (*ethmultisigtypes.MultiSignature, error) {
+func (m ETHMultisig) SignPacketState(height clienttypes.Height, portID, channelID string, sequence uint64, packetCommitment []byte) (*ethmultisigtypes.MultiSignature, []byte, error) {
 	if len(packetCommitment) != 32 {
-		return nil, fmt.Errorf("packetCommitment length must be 32")
+		return nil, nil, fmt.Errorf("packetCommitment length must be 32")
 	}
-	path, err := PacketCommitmentKey(m.prefix, portID, channelID, sequence)
+	path, err := ethmultisigtypes.PacketCommitmentKey(m.prefix, portID, channelID, sequence)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	return m.SignState(ethmultisigtypes.Height(height), ethmultisigtypes.PACKETCOMMITMENT, path, packetCommitment)
 }
 
-func (m ETHMultisig) SignPacketAcknowledgementState(height clienttypes.Height, portID, channelID string, sequence uint64, acknowledgementCommitment []byte) (*ethmultisigtypes.MultiSignature, error) {
+func (m ETHMultisig) SignPacketAcknowledgementState(height clienttypes.Height, portID, channelID string, sequence uint64, acknowledgementCommitment []byte) (*ethmultisigtypes.MultiSignature, []byte, error) {
 	if len(acknowledgementCommitment) != 32 {
-		return nil, fmt.Errorf("acknowledgementCommitment length must be 32")
+		return nil, nil, fmt.Errorf("acknowledgementCommitment length must be 32")
 	}
-	path, err := PacketAcknowledgementCommitmentKey(m.prefix, portID, channelID, sequence)
+	path, err := ethmultisigtypes.PacketAcknowledgementCommitmentKey(m.prefix, portID, channelID, sequence)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	return m.SignState(ethmultisigtypes.Height(height), ethmultisigtypes.PACKETACKNOWLEDGEMENT, path, acknowledgementCommitment)
 }
 
-func (m ETHMultisig) SignState(height ethmultisigtypes.Height, dtp ethmultisigtypes.SignBytes_DataType, path, value []byte) (*ethmultisigtypes.MultiSignature, error) {
+func (m ETHMultisig) SignState(height ethmultisigtypes.Height, dtp ethmultisigtypes.SignBytes_DataType, path, value []byte) (*ethmultisigtypes.MultiSignature, []byte, error) {
 	data, err := m.cdc.Marshal(&ethmultisigtypes.StateData{
 		Path:  path,
 		Value: value,
 	})
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	ts := m.GetCurrentTimestamp()
 	signBytes, err := m.cdc.Marshal(&ethmultisigtypes.SignBytes{
@@ -130,16 +130,16 @@ func (m ETHMultisig) SignState(height ethmultisigtypes.Height, dtp ethmultisigty
 		Data:        data,
 	})
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	signHash := gethcrypto.Keccak256(signBytes)
 	proof := ethmultisigtypes.MultiSignature{Timestamp: ts}
 	for _, key := range m.keys {
 		sig, err := gethcrypto.Sign(signHash, key)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		proof.Signatures = append(proof.Signatures, sig)
 	}
-	return &proof, nil
+	return &proof, signBytes, nil
 }

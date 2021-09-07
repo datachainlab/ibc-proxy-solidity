@@ -1,4 +1,4 @@
-package ethmultisig
+package types
 
 import (
 	"bytes"
