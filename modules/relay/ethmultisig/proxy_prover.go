@@ -3,12 +3,12 @@ package ethmultisig
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	clienttypes "github.com/cosmos/ibc-go/modules/core/02-client/types"
-	conntypes "github.com/cosmos/ibc-go/modules/core/03-connection/types"
-	chantypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
+	connectiontypes "github.com/cosmos/ibc-go/modules/core/03-connection/types"
+	channeltypes "github.com/cosmos/ibc-go/modules/core/04-channel/types"
 	commitmenttypes "github.com/cosmos/ibc-go/modules/core/23-commitment/types"
 	host "github.com/cosmos/ibc-go/modules/core/24-host"
 	ibcexported "github.com/cosmos/ibc-go/modules/core/exported"
-	"github.com/datachainlab/ibc-proxy-prover/pkg/proxy"
+	"github.com/datachainlab/ibc-proxy-relay/pkg/proxy"
 	proxytypes "github.com/datachainlab/ibc-proxy/modules/light-clients/xx-proxy/types"
 	ibcproxytypes "github.com/datachainlab/ibc-proxy/modules/proxy/types"
 	"github.com/hyperledger-labs/yui-relayer/core"
@@ -84,7 +84,7 @@ func (pr *ProxyChainProver) QueryProxyClientConsensusStateWithProof(height int64
 	return pr.SignConsensusStateResponse(res, pr.proxyChain.ProxyPath().UpstreamChain.Path().ClientID, dstClientConsHeight)
 }
 
-func (pr *ProxyChainProver) QueryProxyConnectionStateWithProof(height int64) (*conntypes.QueryConnectionResponse, error) {
+func (pr *ProxyChainProver) QueryProxyConnectionStateWithProof(height int64) (*connectiontypes.QueryConnectionResponse, error) {
 	res, err := pr.proxyChain.QueryProxyConnectionState(height)
 	if err != nil {
 		return nil, err
@@ -92,7 +92,7 @@ func (pr *ProxyChainProver) QueryProxyConnectionStateWithProof(height int64) (*c
 	return pr.SignConnectionStateResponse(res, pr.proxyChain.ProxyPath().UpstreamChain.Path().ConnectionID)
 }
 
-func (pr *ProxyChainProver) QueryProxyChannelWithProof(height int64) (chanRes *chantypes.QueryChannelResponse, err error) {
+func (pr *ProxyChainProver) QueryProxyChannelWithProof(height int64) (chanRes *channeltypes.QueryChannelResponse, err error) {
 	res, err := pr.proxyChain.QueryProxyChannel(height)
 	if err != nil {
 		return nil, err
@@ -100,7 +100,7 @@ func (pr *ProxyChainProver) QueryProxyChannelWithProof(height int64) (chanRes *c
 	return pr.SignChannelStateResponse(res, pr.proxyChain.ProxyPath().UpstreamChain.Path().PortID, pr.proxyChain.ProxyPath().UpstreamChain.Path().ChannelID)
 }
 
-func (pr *ProxyChainProver) QueryProxyPacketCommitmentWithProof(height int64, seq uint64) (comRes *chantypes.QueryPacketCommitmentResponse, err error) {
+func (pr *ProxyChainProver) QueryProxyPacketCommitmentWithProof(height int64, seq uint64) (comRes *channeltypes.QueryPacketCommitmentResponse, err error) {
 	res, err := pr.proxyChain.QueryProxyPacketCommitment(height, seq)
 	if err != nil {
 		return nil, err
@@ -108,7 +108,7 @@ func (pr *ProxyChainProver) QueryProxyPacketCommitmentWithProof(height int64, se
 	return pr.SignPacketStateResponse(res, pr.proxyChain.ProxyPath().UpstreamChain.Path().PortID, pr.proxyChain.ProxyPath().UpstreamChain.Path().ChannelID, seq)
 }
 
-func (pr *ProxyChainProver) QueryProxyPacketAcknowledgementCommitmentWithProof(height int64, seq uint64) (ackRes *chantypes.QueryPacketAcknowledgementResponse, err error) {
+func (pr *ProxyChainProver) QueryProxyPacketAcknowledgementCommitmentWithProof(height int64, seq uint64) (ackRes *channeltypes.QueryPacketAcknowledgementResponse, err error) {
 	res, err := pr.proxyChain.QueryProxyPacketAcknowledgementCommitment(height, seq)
 	if err != nil {
 		return nil, err
