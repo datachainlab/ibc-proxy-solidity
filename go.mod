@@ -9,13 +9,13 @@ require (
 	github.com/confio/ics23/go v0.6.6
 	github.com/cosmos/cosmos-sdk v0.43.0-beta1
 	github.com/cosmos/ibc-go v1.0.0-beta1
-	github.com/datachainlab/ibc-proxy v0.0.0-20210819061801-ebe2656b6d6e
-	github.com/datachainlab/ibc-proxy-prover v0.0.0-20210819114049-854b4a40bbc9
+	github.com/datachainlab/ibc-proxy v0.0.0-20211221015432-a8c24b85f7ba
+	github.com/datachainlab/ibc-proxy-relay v0.0.0-20211221021543-b747411ec852
 	github.com/ethereum/go-ethereum v1.9.25
 	github.com/gogo/protobuf v1.3.3
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	github.com/hyperledger-labs/yui-relayer v0.1.1-0.20210818033701-ef1f6d422958
+	github.com/hyperledger-labs/yui-relayer v0.1.1-0.20211201082514-122526148f85
 	github.com/spf13/cobra v1.1.3
 	github.com/stretchr/testify v1.7.0
 	github.com/tyler-smith/go-bip39 v1.0.1-0.20181017060643-dbb3b84ba2ef

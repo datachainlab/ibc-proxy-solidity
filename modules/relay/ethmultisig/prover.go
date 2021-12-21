@@ -1,6 +1,7 @@
 package ethmultisig
 
 import (
+	"context"
 	"crypto/ecdsa"
 	"fmt"
 	"time"
@@ -45,8 +46,22 @@ func NewProver(pr ProverConfig, chain core.ChainI) (*Prover, error) {
 		}
 		keys = append(keys, prv)
 	}
-	multisig := NewETHMultisig(chain.Codec(), pr.Diversifier, keys, []byte(pr.Prefix))
+	multisig := NewETHMultisig(nil, pr.Diversifier, keys, []byte(pr.Prefix))
 	return &Prover{chain: chain, diversifier: pr.Diversifier, multisig: multisig}, nil
+}
+
+func (pr *Prover) Init(homePath string, timeout time.Duration, codec codec.ProtoCodecMarshaler, debug bool) error {
+	pr.multisig.cdc = codec
+	return nil
+}
+
+// SetPath sets a given path to the chain
+func (pr *Prover) SetPath(p *core.PathEnd) error {
+	return nil
+}
+
+func (pr *Prover) SetupForRelay(ctx context.Context) error {
+	return nil
 }
 
 // GetChainID returns the chain ID
@@ -197,7 +212,6 @@ func (pr *Prover) SignClientStateResponse(res *clienttypes.QueryClientStateRespo
 	if err != nil {
 		return nil, err
 	}
-	pr.xxxInit(pr.chain.Codec())
 	res.Proof, err = marshalProofIfNoError(pr.multisig.SignClientState(res.ProofHeight, clientID, clientState))
 	if err != nil {
 		return nil, err
@@ -214,7 +228,6 @@ func (pr *Prover) SignConsensusStateResponse(res *clienttypes.QueryConsensusStat
 	if err != nil {
 		return nil, err
 	}
-	pr.xxxInit(pr.chain.Codec())
 	res.Proof, err = marshalProofIfNoError(pr.multisig.SignConsensusState(res.ProofHeight, clientID, dstClientConsHeight, consensusState))
 	if err != nil {
 		return nil, err
@@ -228,7 +241,6 @@ func (pr *Prover) SignConnectionStateResponse(res *conntypes.QueryConnectionResp
 	if err != nil {
 		return nil, err
 	}
-	pr.xxxInit(pr.chain.Codec())
 	res.Proof, err = marshalProofIfNoError(pr.multisig.SignConnectionState(res.ProofHeight, connectionID, *res.Connection))
 	if err != nil {
 		return nil, err
@@ -242,7 +254,6 @@ func (pr *Prover) SignChannelStateResponse(res *chantypes.QueryChannelResponse, 
 	if err != nil {
 		return nil, err
 	}
-	pr.xxxInit(pr.chain.Codec())
 	res.Proof, err = marshalProofIfNoError(pr.multisig.SignChannelState(res.ProofHeight, portID, channelID, *res.Channel))
 	if err != nil {
 		return nil, err
@@ -256,7 +267,6 @@ func (pr *Prover) SignPacketStateResponse(res *chantypes.QueryPacketCommitmentRe
 	if err != nil {
 		return nil, err
 	}
-	pr.xxxInit(pr.chain.Codec())
 	res.Proof, err = marshalProofIfNoError(pr.multisig.SignPacketState(res.ProofHeight, portID, channelID, seq, res.Commitment))
 	if err != nil {
 		return nil, err
@@ -270,18 +280,11 @@ func (pr *Prover) SignAcknowledgementStateResponse(res *chantypes.QueryPacketAck
 	if err != nil {
 		return nil, err
 	}
-	pr.xxxInit(pr.chain.Codec())
 	res.Proof, err = marshalProofIfNoError(pr.multisig.SignPacketAcknowledgementState(res.ProofHeight, portID, channelID, seq, res.Acknowledgement))
 	if err != nil {
 		return nil, err
 	}
 	return res, nil
-}
-
-// xxxInit initializes the codec of ethmultisig
-// TODO: This method should be removed after the problem with the prover not giving a codec is fixed
-func (pr *Prover) xxxInit(cdc codec.ProtoCodecMarshaler) {
-	pr.multisig.cdc = cdc
 }
 
 func marshalProofIfNoError(proof *ethmultisigclient.MultiSignature, _ []byte, err error) ([]byte, error) {
