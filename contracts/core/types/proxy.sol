@@ -10,8 +10,8 @@ library IbcLightclientsProxyV1ClientState {
 
   //struct definition
   struct Data {
-    string upstream_client_id;
     GoogleProtobufAny.Data proxy_client_state;
+    string upstream_client_id;
     IbcCoreCommitmentV1MerklePrefix.Data proxy_prefix;
     IbcCoreCommitmentV1MerklePrefix.Data ibc_prefix;
     bool trusted_setup;
@@ -64,10 +64,10 @@ library IbcLightclientsProxyV1ClientState {
       (fieldId, wireType, bytesRead) = ProtoBufRuntime._decode_key(pointer, bs);
       pointer += bytesRead;
       if (fieldId == 1) {
-        pointer += _read_upstream_client_id(pointer, bs, r, counters);
+        pointer += _read_proxy_client_state(pointer, bs, r, counters);
       }
       else if (fieldId == 2) {
-        pointer += _read_proxy_client_state(pointer, bs, r, counters);
+        pointer += _read_upstream_client_id(pointer, bs, r, counters);
       }
       else if (fieldId == 3) {
         pointer += _read_proxy_prefix(pointer, bs, r, counters);
@@ -116,7 +116,7 @@ library IbcLightclientsProxyV1ClientState {
    * @param counters The counters for repeated fields
    * @return The number of bytes decoded
    */
-  function _read_upstream_client_id(
+  function _read_proxy_client_state(
     uint256 p,
     bytes memory bs,
     Data memory r,
@@ -125,11 +125,11 @@ library IbcLightclientsProxyV1ClientState {
     /**
      * if `r` is NULL, then only counting the number of fields.
      */
-    (string memory x, uint256 sz) = ProtoBufRuntime._decode_string(p, bs);
+    (GoogleProtobufAny.Data memory x, uint256 sz) = _decode_GoogleProtobufAny(p, bs);
     if (isNil(r)) {
       counters[1] += 1;
     } else {
-      r.upstream_client_id = x;
+      r.proxy_client_state = x;
       if (counters[1] > 0) counters[1] -= 1;
     }
     return sz;
@@ -143,7 +143,7 @@ library IbcLightclientsProxyV1ClientState {
    * @param counters The counters for repeated fields
    * @return The number of bytes decoded
    */
-  function _read_proxy_client_state(
+  function _read_upstream_client_id(
     uint256 p,
     bytes memory bs,
     Data memory r,
@@ -152,11 +152,11 @@ library IbcLightclientsProxyV1ClientState {
     /**
      * if `r` is NULL, then only counting the number of fields.
      */
-    (GoogleProtobufAny.Data memory x, uint256 sz) = _decode_GoogleProtobufAny(p, bs);
+    (string memory x, uint256 sz) = ProtoBufRuntime._decode_string(p, bs);
     if (isNil(r)) {
       counters[2] += 1;
     } else {
-      r.proxy_client_state = x;
+      r.upstream_client_id = x;
       if (counters[2] > 0) counters[2] -= 1;
     }
     return sz;
@@ -315,24 +315,24 @@ library IbcLightclientsProxyV1ClientState {
     uint256 offset = p;
     uint256 pointer = p;
     
-    if (bytes(r.upstream_client_id).length != 0) {
+    
     pointer += ProtoBufRuntime._encode_key(
       1,
       ProtoBufRuntime.WireType.LengthDelim,
       pointer,
       bs
     );
-    pointer += ProtoBufRuntime._encode_string(r.upstream_client_id, pointer, bs);
-    }
+    pointer += GoogleProtobufAny._encode_nested(r.proxy_client_state, pointer, bs);
     
+    if (bytes(r.upstream_client_id).length != 0) {
     pointer += ProtoBufRuntime._encode_key(
       2,
       ProtoBufRuntime.WireType.LengthDelim,
       pointer,
       bs
     );
-    pointer += GoogleProtobufAny._encode_nested(r.proxy_client_state, pointer, bs);
-    
+    pointer += ProtoBufRuntime._encode_string(r.upstream_client_id, pointer, bs);
+    }
     
     pointer += ProtoBufRuntime._encode_key(
       3,
@@ -403,8 +403,8 @@ library IbcLightclientsProxyV1ClientState {
     Data memory r
   ) internal pure returns (uint) {
     uint256 e;
-    e += 1 + ProtoBufRuntime._sz_lendelim(bytes(r.upstream_client_id).length);
     e += 1 + ProtoBufRuntime._sz_lendelim(GoogleProtobufAny._estimate(r.proxy_client_state));
+    e += 1 + ProtoBufRuntime._sz_lendelim(bytes(r.upstream_client_id).length);
     e += 1 + ProtoBufRuntime._sz_lendelim(IbcCoreCommitmentV1MerklePrefix._estimate(r.proxy_prefix));
     e += 1 + ProtoBufRuntime._sz_lendelim(IbcCoreCommitmentV1MerklePrefix._estimate(r.ibc_prefix));
     e += 1 + 1;
@@ -435,8 +435,8 @@ library IbcLightclientsProxyV1ClientState {
    * @param output The in-storage struct
    */
   function store(Data memory input, Data storage output) internal {
-    output.upstream_client_id = input.upstream_client_id;
     GoogleProtobufAny.store(input.proxy_client_state, output.proxy_client_state);
+    output.upstream_client_id = input.upstream_client_id;
     IbcCoreCommitmentV1MerklePrefix.store(input.proxy_prefix, output.proxy_prefix);
     IbcCoreCommitmentV1MerklePrefix.store(input.ibc_prefix, output.ibc_prefix);
     output.trusted_setup = input.trusted_setup;
